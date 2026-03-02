@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+@theme {
+  --font-montserrat: 'Montserrat', sans-serif;
+  --color-primary-navy: #002147;
+  --color-accent-green: #20B2AA;
+  --color-secondary-blue: #2D5A82;
+  --color-bg-cream: #FDFBF7;
+  --color-text-dark: #1E293B;
+}
+
+@layer base {
+  body {
+    @apply font-montserrat text-text-dark bg-white;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary-navy text-white px-6 py-3 rounded-full font-semibold transition-all transition-opacity active:scale-95;
+  }
+
+  .btn-primary:hover {
+    @apply opacity-90;
+  }
+
+  .btn-secondary {
+    @apply bg-accent-green text-white px-6 py-3 rounded-full font-semibold transition-all transition-opacity active:scale-95;
+  }
+
+  .btn-secondary:hover {
+    @apply opacity-90;
+  }
+
+  .nav-link {
+    @apply text-primary-navy font-medium transition-colors;
+  }
+
+  .nav-link:hover {
+    @apply text-accent-green;
+  }
+}
