@@ -64,7 +64,7 @@ export default function Header({ onEnquire, forceSolid = false }: HeaderProps) {
             <header
                 className={`fixed w-full z-50 transition-all duration-500 ${effectiveIsScrolled
                     ? "top-0 bg-white shadow-lg py-3"
-                    : "top-10 bg-transparent py-6"
+                    : `${isHomePage ? "top-0" : "top-10"} bg-transparent py-6`
                     }`}
             >
                 <div className="container mx-auto px-4 md:px-8 flex items-center justify-between">
