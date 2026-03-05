@@ -52,10 +52,6 @@ export default function AvailabilityManager() {
     const [bulkEnd, setBulkEnd] = useState('17:00');
     const [bulkDuration, setBulkDuration] = useState('hourly');
 
-    useEffect(() => {
-        fetchAvailability();
-    }, []);
-
     async function fetchAvailability() {
         setLoading(true);
         const { data, error } = await supabase
@@ -67,6 +63,11 @@ export default function AvailabilityManager() {
         else setAvailability(data || []);
         setLoading(false);
     }
+
+    useEffect(() => {
+        // eslint-disable-next-line
+        fetchAvailability();
+    }, []);
 
     const toggleActive = async (id: string, current: boolean) => {
         const { error } = await supabase

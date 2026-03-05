@@ -9,7 +9,7 @@ export const metadata = {
 export default function ConsultPage() {
     return (
         <PageLayout forceSolidHeader={true}>
-            <div className="pt-8 lg:pt-10 min-h-[70vh]">
+            <div className="pt-32 lg:pt-40 min-h-[70vh]">
                 <div className="w-full">
                     <ConsultationHub />
                 </div>

@@ -65,10 +65,10 @@ export default function ConsultationFeatured() {
                             <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center mb-6 border border-white/10 group-hover:bg-white group-hover:scale-110 transition-all">
                                 <Clock className="w-8 h-8 text-accent-green group-hover:text-accent-green transition-colors" />
                             </div>
-                            <h3 className="text-white font-black text-2xl mb-2 group-hover:text-primary-navy">Strategy Chat</h3>
+                            <h3 className="text-white font-black text-2xl mb-2 group-hover:text-primary-navy">Strategy Session</h3>
                             <p className="text-accent-green font-black text-sm mb-6 group-hover:text-white uppercase tracking-wider">15 Minutes</p>
                             <div className="mt-auto w-full">
-                                <div className="text-white/60 text-sm mb-6 group-hover:text-white/90">Perfect for quick queries and eligibility checks.</div>
+                                <div className="text-white/60 text-sm mb-6 group-hover:text-white/90">Perfect for brief queries and eligibility checks.</div>
                                 <button className="w-full bg-white/10 text-white py-4 rounded-2xl font-black flex items-center justify-center gap-3 group-hover:bg-primary-navy group-hover:text-white transition-all">
                                     Book Now <ArrowRight className="w-5 h-5" />
                                 </button>
@@ -83,7 +83,7 @@ export default function ConsultationFeatured() {
                             <div className="w-16 h-16 bg-accent-green rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-all">
                                 <Calendar className="w-8 h-8 text-white" />
                             </div>
-                            <h3 className="text-white font-black text-2xl mb-2 group-hover:text-primary-navy transition-colors">Path Planning</h3>
+                            <h3 className="text-white font-black text-2xl mb-2 group-hover:text-primary-navy transition-colors">Deep Dive Session</h3>
                             <p className="text-accent-green font-black text-sm mb-6 uppercase tracking-wider">40 Minutes</p>
                             <div className="mt-auto w-full">
                                 <div className="text-white/60 text-sm mb-6 group-hover:text-gray-500 transition-colors">Comprehensive document review & full pathway mapping.</div>

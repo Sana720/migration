@@ -45,7 +45,7 @@ export default function ConsultationHub() {
                         onClick={() => openBooking(40)}
                         className="group bg-white p-10 rounded-[3.5rem] shadow-2xl border-t-8 border-primary-navy scale-105 cursor-pointer transform hover:scale-[1.07] hover:border-[#20B2AA] hover:shadow-[0_40px_80px_rgba(32,178,170,0.3)] transition-all duration-500 flex flex-col items-center z-10"
                     >
-                        <div className="text-primary-navy font-black text-2xl mb-4 group-hover:text-[#20B2AA] transition-colors">End-to-End Planning</div>
+                        <div className="text-primary-navy font-black text-2xl mb-4 group-hover:text-[#20B2AA] transition-colors">Deep Dive Session</div>
                         <div className="text-5xl font-black mb-4 text-primary-navy group-hover:text-[#20B2AA] transition-colors">40 <span className="text-2xl font-normal text-gray-400 group-hover:text-[#20B2AA] transition-colors">min</span></div>
                         <p className="text-xs text-primary-navy mb-8 font-black uppercase tracking-widest text-center group-hover:text-[#20B2AA] transition-colors">Comprehensive Review</p>
 

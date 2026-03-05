@@ -96,7 +96,7 @@ function HomeContent() {
                   "I don't believe in just processing papers. I believe in securing your legacy in Australia with honesty and precision."
                 </p>
                 <p>
-                  As an authorised Registered Migration Agent, Aditi Mohan focuses on high-complexity cases, appeals, and strategic long-term residency planning.
+                  As a Registered Migration Agent, Aditi  focuses on high-complexity cases, appeals, and strategic long-term residency planning.
                 </p>
               </div>
               <div className="mt-12 flex flex-wrap gap-4">
@@ -181,16 +181,16 @@ function HomeContent() {
                   </svg>
                 )
               },
-              {
-                title: "Business & Investment",
-                code: "Subclass 188/888",
-                desc: "For high-net-worth individuals and business owners looking to invest in Australia's economy.",
-                icon: (
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-full h-full">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l.43.43a.75.75 0 001.06 0l4.5-4.5.43.43a.75.75 0 001.06 0L21.75 3m-3.75 0h3.75v3.75m-3.75-3.75l3.75 3.75" />
-                  </svg>
-                )
-              },
+              // {
+              //   title: "Business & Investment",
+              //   code: "Subclass 188/888",
+              //   desc: "For high-net-worth individuals and business owners looking to invest in Australia's economy.",
+              //   icon: (
+              //     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-full h-full">
+              //       <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l.43.43a.75.75 0 001.06 0l4.5-4.5.43.43a.75.75 0 001.06 0L21.75 3m-3.75 0h3.75v3.75m-3.75-3.75l3.75 3.75" />
+              //     </svg>
+              //   )
+              // },
               {
                 title: "Student & Graduate",
                 code: "Subclass 500/485",
@@ -324,7 +324,7 @@ function HomeContent() {
             </div>
 
             <div className="bg-white p-10 rounded-[3.5rem] shadow-xl border-t-8 border-accent-green ring-4 ring-accent-green/5 scale-105 transform hover:scale-[1.07] transition-all z-10">
-              <div className="text-accent-green font-bold text-2xl mb-4">End-to-End Planning</div>
+              <div className="text-accent-green font-bold text-2xl mb-4">Deep Dive Session</div>
               <div className="text-5xl font-extrabold mb-4 text-primary-navy">40 <span className="text-2xl font-normal text-gray-400">min</span></div>
               <p className="text-xs text-primary-navy mb-8 font-bold uppercase tracking-widest text-center">Comprehensive Review</p>
               <ul className="text-left space-y-4 mb-10 text-gray-600">
