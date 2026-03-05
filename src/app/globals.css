@@ -1,8 +1,16 @@
 @import "tailwindcss";
 
+:root {
+  --primary-navy: #00205B;
+  --accent-green: #20B2AA;
+  --secondary-blue: #2D5A82;
+  --bg-cream: #FDFBF7;
+  --text-dark: #1E293B;
+}
+
 @theme {
   --font-montserrat: 'Montserrat', sans-serif;
-  --color-primary-navy: #002147;
+  --color-primary-navy: #00205B;
   --color-accent-green: #20B2AA;
   --color-secondary-blue: #2D5A82;
   --color-bg-cream: #FDFBF7;
@@ -10,8 +18,13 @@
 }
 
 @layer base {
+  :root {
+    --primary-navy: #00205B;
+  }
+
   body {
     @apply font-montserrat text-text-dark bg-white;
+    --primary-navy: #00205B;
   }
 }
 

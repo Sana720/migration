@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useBooking } from "./PageLayout";
 
 const services = [
     {
@@ -65,13 +66,9 @@ const services = [
     }
 ];
 
-
-interface ServiceNavigatorProps {
-    onStartAssessment: () => void;
-}
-
-export default function ServiceNavigator({ onStartAssessment }: ServiceNavigatorProps) {
+export default function ServiceNavigator() {
     const [active, setActive] = useState<string | null>(null);
+    const { openBooking } = useBooking();
 
     return (
         <div className="bg-white p-6 md:p-8 rounded-[2rem] shadow-2xl border border-gray-100 max-w-lg w-full">
@@ -99,9 +96,9 @@ export default function ServiceNavigator({ onStartAssessment }: ServiceNavigator
 
             <button
                 disabled={!active}
-                onClick={onStartAssessment}
+                onClick={() => openBooking()}
                 className={`w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all opacity-100 ${active
-                    ? "bg-accent-green text-white hover:bg-green-700 shadow-lg shadow-green-200"
+                    ? "bg-accent-green text-white hover:bg-primary-navy shadow-lg shadow-green-200"
                     : "bg-gray-100 text-gray-400 cursor-not-allowed"
                     }`}
             >

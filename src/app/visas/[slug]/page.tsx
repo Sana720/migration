@@ -4,9 +4,10 @@ import Header from "@/components/Header";
 import Link from "next/link";
 import Image from "next/image";
 import BookingModal from "@/components/BookingModal";
-import { useState } from "react";
+import { useState, use } from "react";
 
-export default function VisaPage({ params }: { params: { slug: string } }) {
+export default function VisaPage({ params }: { params: Promise<{ slug: string }> }) {
+    const { slug } = use(params);
     const [isBookingOpen, setIsBookingOpen] = useState(false);
     const [selectedDuration, setSelectedDuration] = useState<15 | 40 | null>(null);
 

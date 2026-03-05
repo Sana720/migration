@@ -1,25 +1,15 @@
 "use client";
 
-import Header from "@/components/Header";
 import ServiceNavigator from "@/components/ServiceNavigator";
-import BookingModal from "@/components/BookingModal";
+import PageLayout, { useBooking } from "@/components/PageLayout";
 import Image from "next/image";
-import Link from "next/link";
 import { useState } from "react";
 
-export default function Home() {
-  const [isBookingOpen, setIsBookingOpen] = useState(false);
-  const [selectedDuration, setSelectedDuration] = useState<15 | 40 | null>(null);
-
-  const openBooking = (duration: 15 | 40 | null = null) => {
-    setSelectedDuration(duration);
-    setIsBookingOpen(true);
-  };
+function HomeContent() {
+  const { openBooking } = useBooking();
 
   return (
-    <main className="min-h-screen">
-      <Header onEnquire={() => openBooking()} />
-
+    <>
       {/* Hero Section - Refined with Glassmorphism */}
       <section className="relative min-h-[85vh] flex items-center pt-32 pb-20 lg:pt-40 lg:pb-32 overflow-hidden">
         {/* Background Image with Overlay */}
@@ -79,16 +69,16 @@ export default function Home() {
 
             {/* Right Content - Service Hub */}
             <div className="lg:w-[45%] w-full flex justify-center lg:justify-end animate-float">
-              <ServiceNavigator onStartAssessment={() => openBooking()} />
+              <ServiceNavigator />
             </div>
           </div>
         </div>
       </section>
 
       {/* Minimalist Booking Section - High Conversion */}
-      <section className="py-24 bg-white relative overflow-hidden ring-1 ring-gray-100">
+      <section className="py-24 bg-white relative overflow-hidden ring-1 ring-primary-navy/5">
         <div className="container mx-auto px-4 md:px-8">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-12 bg-bg-cream/40 p-12 md:p-16 rounded-[4rem] border border-gray-100 shadow-xl relative group hover:shadow-2xl transition-all duration-700">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-12 bg-bg-cream/40 p-12 md:p-16 rounded-[4rem] border border-primary-navy/10 shadow-xl relative group hover:shadow-2xl transition-all duration-700">
             {/* Decorative background element */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-accent-green/5 rounded-full blur-3xl -z-10 group-hover:bg-accent-green/10 transition-colors"></div>
 
@@ -211,7 +201,7 @@ export default function Home() {
                 icon: "⚖"
               }
             ].map((visa, i) => (
-              <div key={i} className="group bg-white p-10 rounded-[3rem] border border-gray-100 hover:border-accent-green hover:shadow-2xl transition-all duration-500 flex flex-col h-full relative overflow-hidden shadow-sm">
+              <div key={i} className="group bg-white p-10 rounded-[3rem] border border-primary-navy/5 hover:border-accent-green hover:shadow-2xl transition-all duration-500 flex flex-col h-full relative overflow-hidden shadow-sm">
                 <div className="absolute top-[-20%] right-[-10%] text-9xl opacity-[0.03] group-hover:opacity-[0.07] transition-all rotate-12">{visa.icon}</div>
                 <div className="text-accent-green font-black text-xs mb-4 flex items-center gap-2">
                   <span className="w-8 h-[2px] bg-accent-green"></span>
@@ -280,155 +270,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Values Section - Refined Visuals */}
-      <section className="py-32 bg-bg-cream/30">
-        <div className="container mx-auto px-4 md:px-8">
-          <div className="flex flex-col items-center text-center mb-24">
-            <div className="text-accent-green font-black text-xs uppercase tracking-[0.4em] mb-4">Our DNA</div>
-            <h2 className="text-3xl md:text-4xl text-primary-navy font-black">Built on Core Principles.</h2>
-          </div>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-            {[
-              {
-                title: "Personalised Solutions",
-                desc: "We don't believe in a one-size-fits-all approach. Every client receives a strategy tailored to their specific circumstances and long-term goals.",
-                icon: (
-                  <svg className="w-12 h-12 text-accent-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                )
-              },
-              {
-                title: "Honest and Transparent",
-                desc: "We provide clear, straightforward advice. You will always have a realistic understanding of your options, costs, and timelines without hidden surprises.",
-                icon: (
-                  <svg className="w-12 h-12 text-accent-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                )
-              },
-              {
-                title: "Solution Mindset",
-                desc: "We focus on finding the most effective way forward. By anticipating potential hurdles, we transform complex legal challenges into clear paths.",
-                icon: (
-                  <svg className="w-12 h-12 text-accent-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                  </svg>
-                )
-              }
-            ].map((val, i) => (
-              <div key={i} className="group relative p-12 rounded-[3.5rem] bg-white overflow-hidden border border-gray-100 shadow-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
-                <div className="mb-8 group-hover:scale-110 transition-transform duration-500">{val.icon}</div>
-                <h3 className="text-xl mb-6 font-black text-primary-navy leading-tight">{val.title}</h3>
-                <p className="text-gray-500 font-medium leading-[1.7] text-sm">{val.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials - Social Proof */}
-      <section className="py-32 bg-white overflow-hidden">
-        <div className="container mx-auto px-4 md:px-8">
-          <div className="flex flex-col lg:flex-row justify-between items-end mb-24 gap-12">
-            <div className="max-w-2xl">
-              <div className="text-accent-green font-black text-xs uppercase tracking-[0.4em] mb-4">Success Stories</div>
-              <h2 className="text-3xl md:text-5xl text-primary-navy font-black leading-tight">
-                Trusted by 10k+ <br /> Clients Worldwide.
-              </h2>
-            </div>
-            <div className="flex gap-4">
-              {/* Static Desktop Controls Decoration */}
-              <div className="w-16 h-16 rounded-full border-2 border-gray-100 flex items-center justify-center text-gray-400 group cursor-pointer hover:border-accent-green hover:text-accent-green transition-all">←</div>
-              <div className="w-16 h-16 rounded-full bg-primary-navy flex items-center justify-center text-white cursor-pointer hover:bg-accent-green transition-all shadow-xl">→</div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 overflow-visible">
-            {[
-              {
-                name: "Sarah Jenkins",
-                pos: "Software Engineer",
-                text: "Forte Migration turned my complex PR application into a stress-free experience. Aditi's attention to detail is unmatched in the industry.",
-                img: "/testimonial-sarah.png"
-              },
-              {
-                name: "Marco Rossi",
-                pos: "Business Owner",
-                text: "The 188 visa process was daunting until we met the team at Forte. Their strategic approach to our investment profile was exceptional.",
-                img: "/testimonial-marco.png"
-              },
-              {
-                name: "Priya Sharma",
-                pos: "Registered Nurse",
-                text: "Honest advice from day one. They told me what I needed to hear, not what I wanted to hear. Now I'm a permanent resident!",
-                img: "/testimonial-priya.png"
-              }
-            ].map((t, i) => (
-              <div key={i} className="bg-bg-cream/30 p-10 rounded-[3rem] border border-gray-100 relative group hover:bg-white hover:shadow-2xl transition-all duration-500">
-                <div className="flex items-center gap-4 mb-8">
-                  <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-accent-green/30">
-                    <Image src={t.img} alt={t.name} width={64} height={64} className="object-cover" />
-                  </div>
-                  <div>
-                    <div className="font-black text-primary-navy">{t.name}</div>
-                    <div className="text-[10px] font-black text-accent-green uppercase tracking-widest">{t.pos}</div>
-                  </div>
-                </div>
-                <p className="text-gray-600 font-medium italic leading-relaxed text-sm">"{t.text}"</p>
-                <div className="mt-8 flex text-accent-green gap-1">
-                  {[1, 2, 3, 4, 5].map(s => <span key={s}>★</span>)}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ Section - Conversion Booster */}
-      <section className="py-32 bg-primary-navy relative overflow-hidden">
-        <div className="container mx-auto px-4 md:px-8 relative z-10">
-          <div className="max-w-4xl mx-auto text-center mb-24">
-            <div className="text-accent-green font-black text-xs uppercase tracking-[0.4em] mb-4">Common Questions</div>
-            <h2 className="text-4xl md:text-5xl text-white font-black mb-6">Expert Answers for You.</h2>
-            <p className="text-white/50 font-medium text-lg">Everything you need to know about starting your Australian journey.</p>
-          </div>
-
-          <div className="max-w-3xl mx-auto space-y-4">
-            {[
-              { q: "How long does a PR visa take?", a: "Processing times vary significantly depending on the subclass. Skilled visas can take 6-12 months, while Partner visas may take 12-24 months." },
-              { q: "Can I apply if my visa was previously refused?", a: "Yes, but it adds complexity. We specialize in refusal cases and AAT representation to give you the best chance of success." },
-              { q: "What is a Registered Migration Agent (RMA)?", a: "An RMA is a professional authorised by the Australian government to provide immigration legal advice. Nilesh Nandan is an experienced RMA." },
-              { q: "Do you offer a success guarantee?", a: "While no agent can guarantee a visa outcome, we guarantee 100% honesty in our assessment and professional excellence in our work." }
-            ].map((faq, i) => (
-              <div key={i} className="bg-white/5 backdrop-blur-md rounded-3xl border border-white/5 overflow-hidden group hover:border-accent-green/30 transition-all">
-                <div className="p-8 cursor-pointer flex justify-between items-center">
-                  <span className="text-white font-bold text-lg">{faq.q}</span>
-                  <span className="text-accent-green text-2xl group-hover:rotate-45 transition-transform">+</span>
-                </div>
-                {/* Simplified open behavior for demo - usually would use state */}
-                <div className="px-8 pb-8 text-white/60 font-medium leading-relaxed text-sm hidden group-hover:block transition-all animate-in slide-in-from-top-2">
-                  {faq.a}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Large CTA Box */}
-          <div className="mt-32 glass-dark p-12 md:p-20 rounded-[4rem] text-center border-white/5 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-accent-green/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2"></div>
-            <h2 className="text-4xl md:text-6xl text-white font-black mb-8 leading-tight">
-              Ready to Discuss <br /> Your <span className="text-accent-green">Success Strategy</span>?
-            </h2>
-            <button
-              onClick={() => openBooking()}
-              className="bg-accent-green text-primary-navy px-12 py-6 rounded-2xl font-black text-xl hover:scale-105 transition-all shadow-2xl">
-              Get Started Now
-            </button>
-          </div>
-        </div>
-      </section>
-
       {/* Consultation Pricing Section */}
       <section className="py-20 bg-bg-cream/30">
         <div className="container mx-auto px-4 md:px-8 text-center">
@@ -440,7 +281,7 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto text-sm md:text-base">
             <div className="bg-white p-10 rounded-[3.5rem] shadow-xl border-t-8 border-primary-navy transform hover:scale-[1.02] transition-all">
               <div className="text-primary-navy font-bold text-2xl mb-4">Strategy Session</div>
-              <div className="text-5xl font-extrabold mb-4 text-gray-900">15 <span className="text-2xl font-normal text-gray-400">min</span></div>
+              <div className="text-5xl font-extrabold mb-4 text-primary-navy">15 <span className="text-2xl font-normal text-gray-400">min</span></div>
               <p className="text-xs text-accent-green mb-8 font-bold uppercase tracking-widest text-center">Initial Assessment</p>
               <ul className="text-left space-y-4 mb-10 text-gray-600">
                 <li className="flex items-center gap-3">
@@ -454,14 +295,14 @@ export default function Home() {
               </ul>
               <button
                 onClick={() => openBooking(15)}
-                className="w-full bg-primary-navy text-white py-4 rounded-2xl font-bold text-lg hover:bg-black transition-all shadow-lg">
+                className="w-full bg-primary-navy text-white py-4 rounded-2xl font-bold text-lg hover:bg-accent-green transition-all shadow-lg">
                 Book 15 Min Chat
               </button>
             </div>
 
-            <div className="bg-white p-10 rounded-[3.5rem] shadow-xl border-t-8 border-secondary-blue ring-4 border-secondary-blue/5 scale-105 transform hover:scale-[1.07] transition-all z-10">
-              <div className="text-secondary-blue font-bold text-2xl mb-4">End-to-End Planning</div>
-              <div className="text-5xl font-extrabold mb-4 text-gray-900">40 <span className="text-2xl font-normal text-gray-400">min</span></div>
+            <div className="bg-white p-10 rounded-[3.5rem] shadow-xl border-t-8 border-accent-green ring-4 ring-accent-green/5 scale-105 transform hover:scale-[1.07] transition-all z-10">
+              <div className="text-accent-green font-bold text-2xl mb-4">End-to-End Planning</div>
+              <div className="text-5xl font-extrabold mb-4 text-primary-navy">40 <span className="text-2xl font-normal text-gray-400">min</span></div>
               <p className="text-xs text-primary-navy mb-8 font-bold uppercase tracking-widest text-center">Comprehensive Review</p>
               <ul className="text-left space-y-4 mb-10 text-gray-600">
                 <li className="flex items-center gap-3 font-bold text-primary-navy">
@@ -475,76 +316,21 @@ export default function Home() {
               </ul>
               <button
                 onClick={() => openBooking(40)}
-                className="w-full bg-accent-green text-white py-4 rounded-2xl font-bold text-lg hover:bg-green-700 transition-all shadow-lg">
+                className="w-full bg-accent-green text-white py-4 rounded-2xl font-bold text-lg hover:bg-primary-navy transition-all shadow-lg">
                 Book 40 Min Session
               </button>
             </div>
           </div>
         </div>
       </section>
+    </>
+  );
+}
 
-      <BookingModal
-        isOpen={isBookingOpen}
-        onClose={() => setIsBookingOpen(false)}
-        initialDuration={selectedDuration}
-      />
-
-      {/* Footer (My Visa 4-Column Structure) */}
-      <footer className="bg-primary-navy text-white pt-20 pb-10">
-        <div className="container mx-auto px-4 md:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16 border-b border-white/10 pb-16">
-            <div>
-              <div className="relative w-40 h-10 mb-8">
-                <Image
-                  src="/logo.png"
-                  alt="Forte Migration"
-                  fill
-                  className="object-contain"
-                />
-              </div>
-              <p className="text-white/70 leading-relaxed italic">
-                "Your trusted partner for securing your future in Australia."
-              </p>
-            </div>
-
-            <div>
-              <h4 className="text-white text-xl mb-6">Services</h4>
-              <ul className="space-y-4 text-white/70">
-                <li><Link href="#" className="hover:text-secondary-teal transition-colors">Skilled Migration</Link></li>
-                <li><Link href="#" className="hover:text-secondary-teal transition-colors">Student Related Visas</Link></li>
-                <li><Link href="#" className="hover:text-secondary-teal transition-colors">Family Migration</Link></li>
-                <li><Link href="#" className="hover:text-secondary-teal transition-colors">Corporate Compliance</Link></li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="text-white text-xl mb-6">Quick Links</h4>
-              <ul className="space-y-4 text-white/70">
-                <li><Link href="#" className="hover:text-secondary-teal transition-colors">About Forte Migration</Link></li>
-                <li><Link href="#" className="hover:text-secondary-teal transition-colors">Book Consultation</Link></li>
-                <li><Link href="#" className="hover:text-secondary-teal transition-colors">Latest Updates</Link></li>
-                <li><Link href="#" className="hover:text-secondary-teal transition-colors">Contact Us</Link></li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="text-white text-xl mb-6">Working Hours</h4>
-              <p className="text-white/70 mb-4">Monday - Friday: 9:00 AM - 6:00 PM</p>
-              <p className="text-white/70 mb-8">Weekend: By Appointment</p>
-              <div className="flex space-x-4">
-                {/* Social Icons Placeholder */}
-                <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-accent-emerald transition-all cursor-pointer">f</div>
-                <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-accent-emerald transition-all cursor-pointer">in</div>
-                <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-accent-emerald transition-all cursor-pointer">ig</div>
-              </div>
-            </div>
-          </div>
-
-          <div className="text-center text-white/40 text-sm">
-            © {new Date().getFullYear()} Forte Migration. All Rights Reserved.
-          </div>
-        </div>
-      </footer>
-    </main>
+export default function Home() {
+  return (
+    <PageLayout>
+      <HomeContent />
+    </PageLayout>
   );
 }

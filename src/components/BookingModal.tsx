@@ -1,7 +1,9 @@
-"use strict";
+'use client';
 
-import React, { useState, useEffect } from "react";
-import Image from "next/image";
+import React, { useState, useEffect, useMemo } from 'react';
+import Image from 'next/image';
+import { X, Calendar as CalendarIcon, Clock, Check, ChevronRight, Phone, Mail, User, MessageSquare, ArrowLeft } from 'lucide-react';
+import { createClient } from '@/utils/supabase/client';
 
 interface BookingModalProps {
     isOpen: boolean;
@@ -9,182 +11,453 @@ interface BookingModalProps {
     initialDuration?: 15 | 40 | null;
 }
 
-const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, initialDuration }) => {
-    const [step, setStep] = useState<1 | 2>(1);
-    const [duration, setDuration] = useState<15 | 40 | null>(initialDuration || null);
-    const [selectedDay, setSelectedDay] = useState<number>(0);
+interface AvailabilitySlot {
+    day_of_week: number;
+    start_time: string;
+    end_time: string;
+    blocked_slots?: string[];
+}
 
+interface DayOption {
+    name: string;
+    date: string;
+    dateIso: string;
+    dayNum: number; // 1-7
+}
+
+export default function BookingModal({ isOpen, onClose, initialDuration }: BookingModalProps) {
+    const supabase = createClient();
+    const [step, setStep] = useState<1 | 2 | 3>(1);
+    const [duration, setDuration] = useState<15 | 40 | null>(initialDuration || null);
+    const [selectedDayIndex, setSelectedDayIndex] = useState(0);
+    const [availability, setAvailability] = useState<AvailabilitySlot[]>([]);
+    const [existingBookings, setExistingBookings] = useState<{ appointment_date: string; appointment_time: string }[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [submitting, setSubmitting] = useState(false);
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        phone: '',
+        message: '',
+        appointment_time: ''
+    });
+
+    // Initialize state and handle opening/closing
     useEffect(() => {
-        if (initialDuration) {
-            setDuration(initialDuration);
-            setStep(2);
+        if (isOpen) {
+            if (initialDuration) {
+                setDuration(initialDuration);
+                setStep(2);
+            } else {
+                setStep(1);
+            }
         } else {
-            setStep(1);
-            setDuration(null);
+            // Delay reset to avoid flicker during closing animation
+            setTimeout(() => {
+                setStep(1);
+                setDuration(null);
+                setFormData({ name: '', email: '', phone: '', message: '', appointment_time: '' });
+            }, 300);
         }
-    }, [initialDuration, isOpen]);
+    }, [isOpen, initialDuration]);
+
+    // Reactively fetch availability when duration or open state changes
+    useEffect(() => {
+        if (isOpen && duration) {
+            fetchAvailability();
+        }
+    }, [isOpen, duration]);
+
+    const fetchAvailability = async () => {
+        setLoading(true);
+        try {
+            // Fetch Availability Rules
+            const { data: availData, error: availError } = await supabase
+                .from('availability')
+                .select('*')
+                .eq('is_active', true)
+                .eq('duration_type', `${duration}-min`);
+
+            if (availError) throw availError;
+            setAvailability(availData || []);
+
+            // Fetch Existing Bookings (to prevent double booking)
+            const { data: bookingData, error: bookingError } = await supabase
+                .from('leads')
+                .select('appointment_date, appointment_time')
+                .neq('status', 'cancelled'); // Don't count cancelled bookings
+
+            if (bookingError) throw bookingError;
+            setExistingBookings(bookingData || []);
+
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Generate next 5 business days
+    const generateDays = (): DayOption[] => {
+        const days: DayOption[] = [];
+        let count = 0;
+        let iter = 0;
+        while (count < 5 && iter < 14) {
+            const d = new Date();
+            d.setDate(d.getDate() + iter);
+            const dayNum = d.getDay(); // Sunday is 0, matching Admin UI and standard JS
+
+            if (dayNum !== 6 && dayNum !== 7) {
+                days.push({
+                    name: d.toLocaleDateString('en-US', { weekday: 'long' }),
+                    date: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+                    dateIso: d.toISOString().split('T')[0],
+                    dayNum: dayNum
+                });
+                count++;
+            }
+            iter++;
+        }
+        return days;
+    };
+
+    const days = generateDays();
+    const currentDay = days[selectedDayIndex];
+
+    // Generate time slots for the selected day
+    const getTimeSlots = () => {
+        if (!currentDay || !duration) return [];
+
+        const dayAvailability = availability.find(a => a.day_of_week === currentDay.dayNum);
+        if (!dayAvailability) return [];
+
+        const slots: { time: string; isBooked: boolean }[] = [];
+        const [startH, startM] = dayAvailability.start_time.split(':').map(Number);
+        const [endH, endM] = dayAvailability.end_time.split(':').map(Number);
+
+        let current = new Date();
+        current.setHours(startH, startM, 0, 0);
+
+        const end = new Date();
+        end.setHours(endH, endM, 0, 0);
+
+        while (current < end) {
+            const slotStr = current.toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+            });
+
+            // Check if this slot is already booked for the current date
+            const booked = existingBookings.some(
+                booking => booking.appointment_date === currentDay.dateIso && booking.appointment_time === slotStr
+            );
+
+            // Check if this slot is manually blocked
+            const blocked = dayAvailability.blocked_slots?.includes(slotStr);
+
+            if (!blocked) {
+                slots.push({ time: slotStr, isBooked: booked });
+            }
+
+            current.setMinutes(current.getMinutes() + duration);
+        }
+        return slots;
+    };
+
+    const timeSlots = getTimeSlots();
+
+    const handleSelectSlot = (slot: string) => {
+        setFormData(prev => ({ ...prev, appointment_time: slot }));
+        setStep(3);
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setSubmitting(true);
+        try {
+            const { error } = await supabase
+                .from('leads')
+                .insert({
+                    name: formData.name,
+                    email: formData.email,
+                    phone: formData.phone,
+                    message: formData.message,
+                    type: `${duration}-min`,
+                    appointment_date: currentDay.dateIso,
+                    appointment_time: formData.appointment_time,
+                    status: 'new'
+                });
+
+            if (error) throw error;
+
+            alert('Booking request sent successfully! Aditi will contact you soon.');
+            onClose();
+        } catch (error: any) {
+            console.error('Error submitting lead:', error);
+            alert('Error: ' + error.message);
+        } finally {
+            setSubmitting(false);
+        }
+    };
 
     if (!isOpen) return null;
-
-    const days = [
-        { name: "Monday", date: "Mar 2" },
-        { name: "Tuesday", date: "Mar 3" },
-        { name: "Wednesday", date: "Mar 4" },
-        { name: "Thursday", date: "Mar 5" },
-        { name: "Friday", date: "Mar 6" },
-    ];
-
-    const timeSlots = [
-        "8:10 AM", "10:30 AM", "10:50 AM", "11:10 AM",
-        "3:50 AM", "4:10 AM", "4:30 AM", "4:50 AM",
-        "4:10 AM", "4:30 AM", "5:50 AM", "6:10 AM",
-        "3:30 AM", "4:30 AM", "6:30 AM", "7:30 AM",
-        "3:30 AM", "3:50 AM", "4:10 AM", "4:30 AM",
-    ];
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
             {/* Backdrop */}
             <div
-                className="absolute inset-0 bg-primary-navy/60 backdrop-blur-md transition-opacity duration-300"
+                className="absolute inset-0 bg-primary-navy/40 backdrop-blur-md transition-opacity duration-300"
                 onClick={onClose}
             ></div>
 
-            {/* Modal Content */}
-            <div className="relative bg-white w-full max-w-5xl max-h-[90vh] overflow-y-auto rounded-[2.5rem] shadow-2xl transition-all duration-500 scale-100 opacity-100 flex flex-col">
+            {/* Modal Body */}
+            <div className="relative bg-white w-full max-w-4xl max-h-[90vh] overflow-hidden rounded-[2.5rem] shadow-2xl flex flex-col">
+
                 {/* Header */}
-                <div className="flex justify-between items-center p-8 border-b border-gray-100">
-                    <h2 className="text-2xl font-bold text-primary-navy uppercase tracking-widest text-sm">
-                        {step === 1 ? "Select Appointment Type" : "Book Appointment"}
-                    </h2>
+                <div className="p-6 md:p-8 flex items-center justify-between border-b border-gray-100">
+                    <div className="flex items-center gap-4">
+                        {step > 1 && (
+                            <button
+                                onClick={() => setStep(step - 1 as any)}
+                                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                            >
+                                <ArrowLeft className="w-5 h-5 text-gray-500" />
+                            </button>
+                        )}
+                        <div>
+                            <h2 className="text-xl font-bold text-primary-navy">
+                                {step === 1 ? 'Select Service' : step === 2 ? 'Choose Time' : 'Contact Details'}
+                            </h2>
+                            <div className="flex gap-1 mt-1">
+                                {[1, 2, 3].map(i => (
+                                    <div
+                                        key={i}
+                                        className={`h-1 w-8 rounded-full transition-all ${i <= step ? 'bg-accent-green' : 'bg-gray-100'}`}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    </div>
                     <button
                         onClick={onClose}
                         className="p-2 hover:bg-gray-100 rounded-full transition-colors"
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-gray-400">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
+                        <X className="w-6 h-6 text-gray-400" />
                     </button>
                 </div>
 
-                <div className="p-8 md:p-12">
-                    {step === 1 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                            {/* 15 Min Card */}
-                            <div
-                                onClick={() => { setDuration(15); setStep(2); }}
-                                className="group cursor-pointer bg-white p-10 rounded-[3rem] border border-gray-100 shadow-xl hover:border-primary-navy hover:shadow-2xl transition-all duration-500 flex flex-col items-center text-center"
-                            >
-                                <div className="text-primary-navy font-bold text-xl mb-2 group-hover:text-accent-green transition-colors">Assessment</div>
-                                <div className="text-6xl font-extrabold mb-6 text-gray-900 group-hover:scale-110 transition-transform duration-500">15 <span className="text-2xl font-normal text-gray-400">min</span></div>
-                                <p className="text-xs text-accent-green mb-8 font-bold uppercase tracking-widest">Initial Assessment</p>
-                                <ul className="text-left space-y-4 mb-10 text-gray-500 text-sm">
-                                    <li className="flex items-center gap-3"><span className="text-accent-green">✓</span> Initial eligibility assessment</li>
-                                    <li className="flex items-center gap-3"><span className="text-accent-green">✓</span> Quick visa query resolution</li>
-                                </ul>
-                                <div className="mt-auto w-full bg-primary-navy text-white py-4 rounded-2xl font-bold group-hover:bg-accent-green transition-all shadow-lg">
-                                    Select 15 Min Chat
-                                </div>
-                            </div>
-
-                            {/* 40 Min Card */}
-                            <div
-                                onClick={() => { setDuration(40); setStep(2); }}
-                                className="group cursor-pointer bg-white p-10 rounded-[3rem] border border-gray-100 shadow-xl hover:border-secondary-blue hover:shadow-2xl transition-all duration-500 flex flex-col items-center text-center ring-4 ring-secondary-blue/5"
-                            >
-                                <div className="text-secondary-blue font-bold text-xl mb-2 group-hover:text-primary-navy transition-colors">Planning</div>
-                                <div className="text-6xl font-extrabold mb-6 text-gray-900 group-hover:scale-110 transition-transform duration-500">40 <span className="text-2xl font-normal text-gray-400">min</span></div>
-                                <p className="text-xs text-primary-navy mb-8 font-bold uppercase tracking-widest text-center">Comprehensive Review</p>
-                                <ul className="text-left space-y-4 mb-10 text-gray-500 text-sm">
-                                    <li className="flex items-center gap-3"><span className="text-accent-green">★</span> Detailed path mapping</li>
-                                    <li className="flex items-center gap-3"><span className="text-accent-green">✓</span> Comprehensive document review</li>
-                                </ul>
-                                <div className="mt-auto w-full bg-accent-green text-white py-4 rounded-2xl font-bold group-hover:bg-secondary-blue transition-all shadow-lg">
-                                    Select 40 Min Session
-                                </div>
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="flex flex-col gap-12">
-                            {/* Expert Info */}
-                            <div className="bg-bg-cream/20 rounded-[2.5rem] p-8 border border-gray-100 flex flex-col md:flex-row items-center gap-8">
-                                <div className="relative w-40 h-40 rounded-3xl overflow-hidden shadow-xl">
-                                    <Image
-                                        src="/logo.png"
-                                        alt="Aditi"
-                                        fill
-                                        className="object-cover grayscale brightness-110"
-                                    />
-                                </div>
-                                <div className="flex-1 text-center md:text-left">
-                                    <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
-                                        <span className="bg-green-100 text-green-700 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3">
-                                                <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clipRule="evenodd" />
-                                            </svg>
-                                            AVAILABLE
-                                        </span>
-                                        <h3 className="text-xl font-bold text-primary-navy">{duration}-Min-Chat (Video/Phone) with Aditi </h3>
-                                    </div>
-                                    <p className="text-gray-600 italic text-sm mb-4">"Need a quick chat?"</p>
-                                    <p className="text-gray-500 text-sm leading-relaxed max-w-2xl">
-                                        Perfect for time-sensitive matters requiring a quick chat with an expert with a 100% money back guarantee.
-                                        [If no suitable appointment slots are available below, please call us on 1300 558 472]
-                                    </p>
-                                </div>
+                <div className="flex-1 overflow-y-auto p-6 md:p-10">
+                    {/* Step 1: Duration Selection */}
+                    {step === 1 && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+                            {[
+                                {
+                                    min: 15,
+                                    title: 'Initial Assessment',
+                                    desc: 'Quick eligibility check and brief visa queries.',
+                                    color: 'border-accent-green',
+                                    bg: 'bg-accent-green/5'
+                                },
+                                {
+                                    min: 40,
+                                    title: 'Full Consultation',
+                                    desc: 'Comprehensive visa strategy and detailed document review.',
+                                    color: 'border-secondary-blue',
+                                    bg: 'bg-secondary-blue/5'
+                                }
+                            ].map((opt) => (
                                 <button
-                                    onClick={() => setStep(1)}
-                                    className="text-primary-navy font-bold text-xs uppercase tracking-widest hover:text-accent-green transition-colors flex items-center gap-2"
+                                    key={opt.min}
+                                    onClick={() => { setDuration(opt.min as 15 | 40); setStep(2); }}
+                                    className={`group relative p-8 rounded-[2rem] border-2 text-left transition-all hover:shadow-xl ${opt.color} ${opt.bg}`}
                                 >
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-                                    </svg>
-                                    Change Duration
+                                    <div className="text-3xl font-black text-primary-navy mb-2">{opt.min} MIN</div>
+                                    <h3 className="text-lg font-bold text-primary-navy mb-3">{opt.title}</h3>
+                                    <p className="text-sm text-gray-500 leading-relaxed mb-6">{opt.desc}</p>
+                                    <div className="flex items-center text-primary-navy font-bold text-sm">
+                                        Select Service <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                                    </div>
                                 </button>
+                            ))}
+                        </div>
+                    )}
+
+                    {/* Step 2: Calendar & Slots */}
+                    {step === 2 && (
+                        <div className="space-y-10">
+                            {/* Expert Preview */}
+                            <div className="flex items-center gap-6 p-6 bg-gray-50 rounded-3xl border border-gray-100">
+                                <div className="hidden sm:block relative w-20 h-20 rounded-2xl overflow-hidden shadow-lg border-2 border-white">
+                                    <Image src="/logo.png" alt="Expert" fill className="object-cover" />
+                                </div>
+                                <div>
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                                        <span className="text-[10px] font-bold text-green-600 uppercase tracking-widest">Available Next Week</span>
+                                    </div>
+                                    <h3 className="text-lg font-bold text-primary-navy">{duration} Min Professional Session</h3>
+                                    <p className="text-sm text-gray-500">Video call or phone consultation with Aditi.</p>
+                                </div>
                             </div>
 
-                            {/* Calendar Section */}
-                            <div className="flex flex-col gap-8">
-                                <div className="flex flex-col items-center">
-                                    <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Time Zone: Australia/Sydney (GMT+11:00)</div>
-
-                                    {/* Days Selector */}
-                                    <div className="flex overflow-x-auto w-full pb-4 gap-4 justify-between scrollbar-hide">
-                                        {days.map((day, i) => (
-                                            <div
-                                                key={i}
-                                                onClick={() => setSelectedDay(i)}
-                                                className={`flex flex-col items-center min-w-[120px] p-6 rounded-3xl transition-all cursor-pointer ${selectedDay === i ? 'bg-primary-navy text-white shadow-xl scale-105' : 'bg-white text-gray-500 hover:bg-gray-50 border border-gray-100'}`}
-                                            >
-                                                <span className="text-[10px] font-bold uppercase tracking-widest mb-1 opacity-70">Next Week</span>
-                                                <span className="font-bold text-lg">{day.name}</span>
-                                                <span className={`text-sm ${selectedDay === i ? 'text-white/70' : 'text-gray-400'}`}>{day.date}</span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {/* Time Slots Grid */}
-                                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                                    {timeSlots.map((slot, i) => (
+                            {/* Date Selector */}
+                            <div className="flex flex-col gap-4">
+                                <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Select Appointment Date</span>
+                                <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+                                    {days.map((day, i) => (
                                         <button
                                             key={i}
-                                            className="group relative bg-white border border-gray-100 p-6 rounded-2xl text-center hover:border-accent-green hover:shadow-lg transition-all"
+                                            onClick={() => setSelectedDayIndex(i)}
+                                            className={`flex flex-col items-center min-w-[100px] p-5 rounded-2xl border-2 transition-all ${selectedDayIndex === i ? 'border-primary-navy bg-primary-navy text-white shadow-lg scale-105' : 'border-gray-100 bg-white text-gray-500 hover:border-gray-200'}`}
                                         >
-                                            <span className="text-primary-navy font-bold group-hover:text-accent-green transition-colors">{slot}</span>
-                                            <div className="absolute inset-0 bg-accent-green/5 opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl"></div>
+                                            <span className="text-[10px] font-bold uppercase mb-1 opacity-70">{day.name.slice(0, 3)}</span>
+                                            <span className="text-lg font-black">{day.date.split(' ')[1]}</span>
+                                            <span className="text-[10px] font-medium">{day.date.split(' ')[0]}</span>
                                         </button>
                                     ))}
                                 </div>
+                            </div>
 
-                                <p className="text-center text-gray-400 text-xs mt-4">Showing available slots for {days[selectedDay].name}, {days[selectedDay].date}</p>
+                            {/* Time Slots */}
+                            <div className="flex flex-col gap-4">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Available Times</span>
+                                    <span className="text-[10px] font-bold text-gray-400">Timezone: Sydney (GMT+11)</span>
+                                </div>
+                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                                    {loading ? (
+                                        <div className="col-span-full py-10 flex justify-center">
+                                            <div className="w-6 h-6 border-2 border-primary-navy border-t-transparent rounded-full animate-spin"></div>
+                                        </div>
+                                    ) : timeSlots.length > 0 ? (
+                                        timeSlots.map((slot, i) => (
+                                            <button
+                                                key={i}
+                                                disabled={slot.isBooked}
+                                                onClick={() => handleSelectSlot(slot.time)}
+                                                className={`p-4 rounded-xl border text-sm font-bold transition-all text-center flex flex-col items-center justify-center gap-1 ${slot.isBooked
+                                                    ? 'bg-gray-50 border-gray-100 text-gray-300 cursor-not-allowed'
+                                                    : 'border-gray-100 text-primary-navy hover:border-accent-green hover:bg-accent-green/5'
+                                                    }`}
+                                            >
+                                                <span>{slot.time}</span>
+                                                {slot.isBooked && (
+                                                    <span className="text-[8px] uppercase tracking-widest text-red-300">Booked</span>
+                                                )}
+                                            </button>
+                                        ))
+                                    ) : (
+                                        <div className="col-span-full py-8 text-center bg-gray-50 rounded-2xl border border-dashed border-gray-200">
+                                            <p className="text-sm text-gray-400">No slots available for this day.</p>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
+                    )}
+
+                    {/* Step 3: Lead Form */}
+                    {step === 3 && (
+                        <form onSubmit={handleSubmit} className="max-w-2xl mx-auto space-y-8">
+                            {/* Summary Card */}
+                            <div className="flex items-center justify-between p-6 bg-accent-green/5 border border-accent-green/20 rounded-3xl">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-12 h-12 bg-accent-green rounded-2xl flex items-center justify-center text-white">
+                                        <Clock className="w-6 h-6" />
+                                    </div>
+                                    <div>
+                                        <div className="text-sm font-bold text-primary-navy">{duration} Min Consultation</div>
+                                        <div className="text-xs text-gray-500">{currentDay.name}, {currentDay.date} @ {formData.appointment_time}</div>
+                                    </div>
+                                </div>
+                                <Check className="w-6 h-6 text-accent-green" />
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Full Name</label>
+                                    <div className="relative">
+                                        <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                        <input
+                                            required
+                                            type="text"
+                                            placeholder="John Doe"
+                                            className="w-full pl-12 pr-4 py-4 bg-gray-50 border border-transparent focus:bg-white focus:border-accent-green rounded-2xl transition-all outline-none text-sm"
+                                            value={formData.name}
+                                            onChange={e => setFormData({ ...formData, name: e.target.value })}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Email Address</label>
+                                    <div className="relative">
+                                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                        <input
+                                            required
+                                            type="email"
+                                            placeholder="john@example.com"
+                                            className="w-full pl-12 pr-4 py-4 bg-gray-50 border border-transparent focus:bg-white focus:border-accent-green rounded-2xl transition-all outline-none text-sm"
+                                            value={formData.email}
+                                            onChange={e => setFormData({ ...formData, email: e.target.value })}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Phone Number</label>
+                                    <div className="relative">
+                                        <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                        <input
+                                            required
+                                            type="tel"
+                                            placeholder="+61 400 000 000"
+                                            className="w-full pl-12 pr-4 py-4 bg-gray-50 border border-transparent focus:bg-white focus:border-accent-green rounded-2xl transition-all outline-none text-sm"
+                                            value={formData.phone}
+                                            onChange={e => setFormData({ ...formData, phone: e.target.value })}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Short Message (Optional)</label>
+                                    <div className="relative">
+                                        <MessageSquare className="absolute left-4 top-4 w-5 h-5 text-gray-400" />
+                                        <textarea
+                                            placeholder="Briefly describe your case..."
+                                            className="w-full pl-12 pr-4 py-4 bg-gray-50 border border-transparent focus:bg-white focus:border-accent-green rounded-2xl transition-all outline-none text-sm min-h-[52px] resize-none"
+                                            value={formData.message}
+                                            onChange={e => setFormData({ ...formData, message: e.target.value })}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button
+                                disabled={submitting}
+                                type="submit"
+                                className="w-full bg-primary-navy text-white py-5 rounded-3xl font-bold text-lg hover:bg-accent-green transition-all shadow-xl active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+                            >
+                                {submitting ? (
+                                    <>
+                                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                        Processing Request...
+                                    </>
+                                ) : (
+                                    <>
+                                        Confirm Booking Request
+                                        <ChevronRight className="w-5 h-5" />
+                                    </>
+                                )}
+                            </button>
+                            <p className="text-center text-[10px] text-gray-400 uppercase tracking-widest">
+                                By submitting, you agree to our terms and conditions.
+                            </p>
+                        </form>
                     )}
                 </div>
             </div>
         </div>
     );
-};
-
-export default BookingModal;
+}
