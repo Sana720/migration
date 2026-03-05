@@ -17,9 +17,7 @@ import { useRouter } from 'next/navigation';
 
 const sidebarItems = [
     { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
-    { name: 'Pages', href: '/admin/pages', icon: FileText },
-    { name: 'Blogs', href: '/admin/blogs', icon: BookOpen },
-    { name: 'Menu Items', href: '/admin/menu', icon: MenuIcon },
+    { name: 'Resources', href: '/admin/resources', icon: BookOpen },
     { name: 'Leads', href: '/admin/leads', icon: Users },
     { name: 'Availability', href: '/admin/availability', icon: Calendar },
 ];

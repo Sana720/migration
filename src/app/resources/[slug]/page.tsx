@@ -23,7 +23,7 @@ interface PageProps {
     }>;
 }
 
-export default async function BlogDetailPage({ params }: PageProps) {
+export default async function ResourceDetailPage({ params }: PageProps) {
     const { slug } = await params;
     const supabase = await createClient();
 
@@ -57,11 +57,11 @@ export default async function BlogDetailPage({ params }: PageProps) {
 
                     <div className="max-w-4xl mx-auto relative z-10">
                         <Link
-                            href="/blogs"
+                            href="/resources"
                             className="inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors text-xs font-black uppercase tracking-widest mb-10 group"
                         >
                             <ArrowLeft className="w-4 h-4 text-accent-green group-hover:-translate-x-1 transition-transform" />
-                            Back to Insights
+                            Back to Resources
                         </Link>
 
                         <h1 className="text-4xl md:text-6xl font-black mb-8 leading-tight tracking-tight">

@@ -14,7 +14,8 @@ import {
     ChevronDown,
     X,
     Filter,
-    Settings2
+    Settings2,
+    RefreshCw
 } from 'lucide-react';
 
 interface Availability {
@@ -32,8 +33,7 @@ const days = [
 ];
 
 const durationOptions = [
-    { label: '15-Min Strategy', value: '15-min' },
-    { label: '40-Min Planning', value: '40-min' }
+    { label: 'Standard Hourly Session', value: 'hourly' }
 ];
 
 const START_HOUR = 8;
@@ -43,14 +43,14 @@ export default function AvailabilityManager() {
     const supabase = createClient();
     const [availability, setAvailability] = useState<Availability[]>([]);
     const [loading, setLoading] = useState(true);
-    const [activeDuration, setActiveDuration] = useState('15-min');
+    const [activeDuration, setActiveDuration] = useState('hourly');
     const [showBulkModal, setShowBulkModal] = useState(false);
 
     // Bulk Update State
     const [bulkDays, setBulkDays] = useState<number[]>([]);
     const [bulkStart, setBulkStart] = useState('09:00');
     const [bulkEnd, setBulkEnd] = useState('17:00');
-    const [bulkDuration, setBulkDuration] = useState('15-min');
+    const [bulkDuration, setBulkDuration] = useState('hourly');
 
     useEffect(() => {
         fetchAvailability();
@@ -197,13 +197,23 @@ export default function AvailabilityManager() {
                         ))}
                     </div>
 
-                    <button
-                        onClick={() => setShowBulkModal(true)}
-                        className="bg-accent-green text-white px-6 py-3.5 rounded-2xl font-bold flex items-center gap-2 shadow-lg hover:shadow-accent-green/20 transition-all hover:scale-105"
-                    >
-                        <Copy className="w-4 h-4" />
-                        Bulk Create
-                    </button>
+                    <div className="flex items-center gap-3">
+                        <button
+                            onClick={fetchAvailability}
+                            disabled={loading}
+                            className={`p-3 bg-white border-2 border-primary-navy/10 rounded-xl text-primary-navy hover:bg-gray-50 transition-all flex items-center justify-center ${loading ? 'opacity-50' : ''}`}
+                            title="Sync Latest Data"
+                        >
+                            <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
+                        </button>
+                        <button
+                            className="bg-accent-green text-white px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center gap-2 hover:scale-105 transition-all shadow-xl shadow-accent-green/20"
+                            onClick={() => setShowBulkModal(true)}
+                        >
+                            <Plus className="w-4 h-4" />
+                            Bulk Create
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -287,14 +297,14 @@ export default function AvailabilityManager() {
                                         <div className="flex-1 flex overflow-hidden">
                                             {Array.from({ length: END_HOUR - START_HOUR }).map((_, hIdx) => {
                                                 const hour = START_HOUR + hIdx;
-                                                const minsForHour = activeDuration === '40-min' ? [0, 20, 40] : [0, 15, 30, 45];
+                                                const minsForHour = [0];
 
                                                 return (
                                                     <div key={hIdx} className="flex-1 min-w-[120px] border-l border-gray-50/50 p-2 h-full flex flex-col justify-center">
-                                                        <div className={`grid gap-1 w-full h-full ${activeDuration === '40-min' ? 'grid-cols-1' : 'grid-cols-2 grid-rows-2'}`}>
+                                                        <div className="grid grid-cols-1 gap-1 w-full h-full">
                                                             {minsForHour.map(min => {
                                                                 const range = getActiveRangeForTime(dayIdx, hour, min);
-                                                                const duration = activeDuration === '40-min' ? 40 : 15;
+                                                                const duration = 60;
 
                                                                 // Calculate End Time
                                                                 const startMins = hour * 60 + min;
@@ -323,10 +333,8 @@ export default function AvailabilityManager() {
                                                                             ? 'bg-gray-100 border-gray-200 text-gray-400 grayscale opacity-40'
                                                                             : isBlocked
                                                                                 ? 'bg-red-500 border-red-600 text-white shadow-lg'
-                                                                                : range.duration_type === '15-min'
-                                                                                    ? 'bg-white border-accent-green/20 text-accent-green hover:bg-accent-green hover:text-white hover:scale-105'
-                                                                                    : 'bg-white border-secondary-blue/20 text-secondary-blue hover:bg-secondary-blue hover:text-white hover:scale-105'
-                                                                            } ${activeDuration === '40-min' ? 'col-span-2' : ''}`}
+                                                                                : 'bg-white border-accent-green/20 text-accent-green hover:bg-accent-green hover:text-white hover:scale-105'
+                                                                            }`}
                                                                         title={isBlocked ? 'Hidden from Homepage' : 'Visible on Homepage'}
                                                                     >
                                                                         <span className="leading-tight whitespace-nowrap">{displayRange}</span>
@@ -404,8 +412,8 @@ export default function AvailabilityManager() {
 
                                 <div className="space-y-4">
                                     <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">Session Policy</label>
-                                    <div className="grid grid-cols-2 gap-3">
-                                        {durationOptions.slice(1).map(opt => (
+                                    <div className="grid grid-cols-1">
+                                        {durationOptions.map(opt => (
                                             <button
                                                 key={opt.value}
                                                 onClick={() => setBulkDuration(opt.value)}

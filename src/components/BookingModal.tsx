@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
-import { X, Calendar as CalendarIcon, Clock, Check, ChevronRight, Phone, Mail, User, MessageSquare, ArrowLeft } from 'lucide-react';
+import { X, Calendar as CalendarIcon, Clock, Check, ChevronRight, Phone, Mail, User, MessageSquare, ArrowLeft, RefreshCw } from 'lucide-react';
 import { createClient } from '@/utils/supabase/client';
 
 interface BookingModalProps {
@@ -27,7 +27,8 @@ interface DayOption {
 
 export default function BookingModal({ isOpen, onClose, initialDuration }: BookingModalProps) {
     const supabase = createClient();
-    const [step, setStep] = useState<1 | 2 | 3>(1);
+    const [step, setStep] = useState<1 | 2 | 3 | 4 | 5>(1);
+    const [showCancelConfirm, setShowCancelConfirm] = useState(false);
     const [duration, setDuration] = useState<15 | 40 | null>(initialDuration || null);
     const [selectedDayIndex, setSelectedDayIndex] = useState(0);
     const [availability, setAvailability] = useState<AvailabilitySlot[]>([]);
@@ -39,8 +40,26 @@ export default function BookingModal({ isOpen, onClose, initialDuration }: Booki
         email: '',
         phone: '',
         message: '',
-        appointment_time: ''
+        appointment_time: '',
+        // New Fields
+        bookingForSelf: 'No',
+        relationship: '',
+        nearestOffice: '',
+        passportCountry: '',
+        backgroundInfo: '',
+        deadlineUrgency: '',
+        local_display_time: ''
     });
+
+    const userTimezone = useMemo(() => {
+        try {
+            return Intl.DateTimeFormat().resolvedOptions().timeZone;
+        } catch (e) {
+            return 'Australia/Sydney';
+        }
+    }, []);
+
+    const SYDNEY_TIMEZONE = 'Australia/Sydney';
 
     // Initialize state and handle opening/closing
     useEffect(() => {
@@ -56,7 +75,13 @@ export default function BookingModal({ isOpen, onClose, initialDuration }: Booki
             setTimeout(() => {
                 setStep(1);
                 setDuration(null);
-                setFormData({ name: '', email: '', phone: '', message: '', appointment_time: '' });
+                setShowCancelConfirm(false);
+                setFormData({
+                    name: '', email: '', phone: '', message: '', appointment_time: '',
+                    bookingForSelf: 'No', relationship: '', nearestOffice: '',
+                    passportCountry: '', backgroundInfo: '', deadlineUrgency: '',
+                    local_display_time: ''
+                });
             }, 300);
         }
     }, [isOpen, initialDuration]);
@@ -76,7 +101,7 @@ export default function BookingModal({ isOpen, onClose, initialDuration }: Booki
                 .from('availability')
                 .select('*')
                 .eq('is_active', true)
-                .eq('duration_type', `${duration}-min`);
+                .eq('duration_type', 'hourly');
 
             if (availError) throw availError;
             setAvailability(availData || []);
@@ -97,31 +122,34 @@ export default function BookingModal({ isOpen, onClose, initialDuration }: Booki
         }
     };
 
-    // Generate next 5 business days
+    // Generate next 14 days and filter by availability
     const generateDays = (): DayOption[] => {
         const days: DayOption[] = [];
-        let count = 0;
-        let iter = 0;
-        while (count < 5 && iter < 14) {
+        const activeDays = availability.map(a => a.day_of_week);
+
+        // Look ahead 14 days to find available slots
+        for (let iter = 0; iter < 14; iter++) {
             const d = new Date();
             d.setDate(d.getDate() + iter);
-            const dayNum = d.getDay(); // Sunday is 0, matching Admin UI and standard JS
+            const dayNum = d.getDay();
 
-            if (dayNum !== 6 && dayNum !== 7) {
+            // Only add if this day of the week has active availability
+            if (activeDays.includes(dayNum)) {
                 days.push({
                     name: d.toLocaleDateString('en-US', { weekday: 'long' }),
                     date: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
                     dateIso: d.toISOString().split('T')[0],
                     dayNum: dayNum
                 });
-                count++;
             }
-            iter++;
+
+            // Limit to next 5 available days to keep UI clean
+            if (days.length >= 5) break;
         }
         return days;
     };
 
-    const days = generateDays();
+    const days = useMemo(() => generateDays(), [availability]);
     const currentDay = days[selectedDayIndex];
 
     // Generate time slots for the selected day
@@ -131,58 +159,131 @@ export default function BookingModal({ isOpen, onClose, initialDuration }: Booki
         const dayAvailability = availability.find(a => a.day_of_week === currentDay.dayNum);
         if (!dayAvailability) return [];
 
-        const slots: { time: string; isBooked: boolean }[] = [];
+        const slots: { time: string; isBooked: boolean; localTime: string }[] = [];
         const [startH, startM] = dayAvailability.start_time.split(':').map(Number);
         const [endH, endM] = dayAvailability.end_time.split(':').map(Number);
 
-        let current = new Date();
-        current.setHours(startH, startM, 0, 0);
+        // We generate slots in Sydney time first
+        let currentSydney = new Date();
+        // Construct the base date in Sydney time context
+        const [y, m, d] = currentDay.dateIso.split('-').map(Number);
 
-        const end = new Date();
-        end.setHours(endH, endM, 0, 0);
+        // Helper to get a Date object at a specific Sydney hour
+        const getSydneyDate = (hour: number, minute: number) => {
+            // This is tricky without a library, but since we know Sydney is roughly UTC+10/11:
+            // We create a UTC date that represents that Sydney time
+            const date = new Date(Date.UTC(y, m - 1, d, hour, minute));
+            // Adjust for Sydney offset (simplified, ideally use a library or better Intl logic)
+            // For now, let's use the native Date with Sydney formatting to find the conversion
+            return date;
+        };
 
-        while (current < end) {
-            const slotStr = current.toLocaleTimeString('en-US', {
+        let currentHour = startH;
+        while (currentHour < endH) {
+            // NEW ROBUST TZ CONVERSION:
+            // 1. Create a plain date string
+            const dateBase = `${currentDay.dateIso}T${currentHour.toString().padStart(2, '0')}:00:00`;
+
+            // 2. Determine Sydney's offset at that specific time
+            const tempDate = new Date(dateBase);
+            const offsetParts = new Intl.DateTimeFormat('en-US', {
+                timeZone: SYDNEY_TIMEZONE,
+                timeZoneName: 'longOffset'
+            }).formatToParts(tempDate);
+            const offsetValue = offsetParts.find(p => p.type === 'timeZoneName')?.value || 'GMT+11:00';
+            const cleanOffset = offsetValue.replace('GMT', '').replace('\u2212', '-'); // Handle minus sign
+
+            // 3. Create the ACTUAL date object as it exists in Sydney
+            const sydneyDate = new Date(`${dateBase}${cleanOffset}`);
+
+            // Format for display in LOCAL time
+            const localTimeStr = sydneyDate.toLocaleTimeString('en-US', {
                 hour: '2-digit',
                 minute: '2-digit',
-                hour12: true
+                hour12: true,
+                timeZone: userTimezone
             });
 
-            // Check if this slot is already booked for the current date
-            const booked = existingBookings.some(
-                booking => booking.appointment_date === currentDay.dateIso && booking.appointment_time === slotStr
-            );
+            const sydneyTimeStr = sydneyDate.toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true,
+                timeZone: SYDNEY_TIMEZONE
+            });
 
-            // Check if this slot is manually blocked
-            const blocked = dayAvailability.blocked_slots?.includes(slotStr);
+            // Extract just the hour part for broader blocking (e.g., "10:00 AM" -> "10 AM")
+            const currentHourPart = currentHour;
 
-            if (!blocked) {
-                slots.push({ time: slotStr, isBooked: booked });
+            // Check if ANY booking exists in this same hour window today
+            const isAnyBookingInHour = existingBookings.some(booking => {
+                const isSameDay = booking.appointment_date === currentDay.dateIso;
+                if (!isSameDay) return false;
+
+                // Parse the booking time string (e.g., "10:15 AM")
+                if (!booking.appointment_time || !booking.appointment_time.includes(' ')) return false;
+
+                const [time, period] = booking.appointment_time.split(' ');
+                if (!time || !period) return false;
+
+                let [h, m] = time.split(':').map(Number);
+                if (period === 'PM' && h !== 12) h += 12;
+                if (period === 'AM' && h === 12) h = 0;
+
+                return h === currentHourPart;
+            });
+
+            // Check if this specific top-of-hour slot is manually blocked
+            const isBlockedInAdmin = dayAvailability.blocked_slots?.includes(sydneyTimeStr);
+
+            if (!isBlockedInAdmin) {
+                slots.push({
+                    time: sydneyTimeStr, // Internal reference
+                    localTime: localTimeStr, // Display usage
+                    isBooked: isAnyBookingInHour
+                });
             }
 
-            current.setMinutes(current.getMinutes() + duration);
+            currentHour++;
         }
         return slots;
     };
 
     const timeSlots = getTimeSlots();
 
-    const handleSelectSlot = (slot: string) => {
-        setFormData(prev => ({ ...prev, appointment_time: slot }));
+    const handleSelectSlot = (slot: { time: string, localTime: string }) => {
+        setFormData(prev => ({ ...prev, appointment_time: slot.time, local_display_time: slot.localTime }));
         setStep(3);
+    };
+
+    const handleNext = (e?: React.FormEvent) => {
+        if (e) e.preventDefault();
+        setStep((step + 1) as any);
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setSubmitting(true);
         try {
+            const combinedMessage = `
+**Booking Details**
+- Booking for someone else? ${formData.bookingForSelf}
+${formData.relationship ? `- Relationship: ${formData.relationship}` : ''}
+- Nearest Office: ${formData.nearestOffice}
+- Passport Country: ${formData.passportCountry}
+- Background Info: ${formData.backgroundInfo}
+- Deadline/Urgency: ${formData.deadlineUrgency}
+
+**Additional Message:**
+${formData.message || 'None provided'}
+            `.trim();
+
             const { error } = await supabase
                 .from('leads')
                 .insert({
                     name: formData.name,
                     email: formData.email,
                     phone: formData.phone,
-                    message: formData.message,
+                    message: combinedMessage,
                     type: `${duration}-min`,
                     appointment_date: currentDay.dateIso,
                     appointment_time: formData.appointment_time,
@@ -191,7 +292,7 @@ export default function BookingModal({ isOpen, onClose, initialDuration }: Booki
 
             if (error) throw error;
 
-            alert('Booking request sent successfully! Aditi will contact you soon.');
+            alert('Booking request sent successfully! Aditi Mohan will contact you soon.');
             onClose();
         } catch (error: any) {
             console.error('Error submitting lead:', error);
@@ -208,11 +309,10 @@ export default function BookingModal({ isOpen, onClose, initialDuration }: Booki
             {/* Backdrop */}
             <div
                 className="absolute inset-0 bg-primary-navy/40 backdrop-blur-md transition-opacity duration-300"
-                onClick={onClose}
             ></div>
 
             {/* Modal Body */}
-            <div className="relative bg-white w-full max-w-4xl max-h-[90vh] overflow-hidden rounded-[2.5rem] shadow-2xl flex flex-col">
+            <div className="relative bg-white w-full max-w-2xl max-h-[90vh] overflow-hidden rounded-[2.5rem] shadow-2xl flex flex-col">
 
                 {/* Header */}
                 <div className="p-6 md:p-8 flex items-center justify-between border-b border-gray-100">
@@ -227,10 +327,10 @@ export default function BookingModal({ isOpen, onClose, initialDuration }: Booki
                         )}
                         <div>
                             <h2 className="text-xl font-bold text-primary-navy">
-                                {step === 1 ? 'Select Service' : step === 2 ? 'Choose Time' : 'Contact Details'}
+                                {step === 1 ? 'Select Service' : step === 2 ? 'Choose Time' : step === 3 ? 'Contact Details' : step === 4 ? 'Tell me more...' : 'Review & Payment'}
                             </h2>
                             <div className="flex gap-1 mt-1">
-                                {[1, 2, 3].map(i => (
+                                {[1, 2, 3, 4, 5].map(i => (
                                     <div
                                         key={i}
                                         className={`h-1 w-8 rounded-full transition-all ${i <= step ? 'bg-accent-green' : 'bg-gray-100'}`}
@@ -239,12 +339,6 @@ export default function BookingModal({ isOpen, onClose, initialDuration }: Booki
                             </div>
                         </div>
                     </div>
-                    <button
-                        onClick={onClose}
-                        className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                    >
-                        <X className="w-6 h-6 text-gray-400" />
-                    </button>
                 </div>
 
                 <div className="flex-1 overflow-y-auto p-6 md:p-10">
@@ -254,7 +348,7 @@ export default function BookingModal({ isOpen, onClose, initialDuration }: Booki
                             {[
                                 {
                                     min: 15,
-                                    title: 'Initial Assessment',
+                                    title: 'Start Consultation',
                                     desc: 'Quick eligibility check and brief visa queries.',
                                     color: 'border-accent-green',
                                     bg: 'bg-accent-green/5'
@@ -289,15 +383,15 @@ export default function BookingModal({ isOpen, onClose, initialDuration }: Booki
                             {/* Expert Preview */}
                             <div className="flex items-center gap-6 p-6 bg-gray-50 rounded-3xl border border-gray-100">
                                 <div className="hidden sm:block relative w-20 h-20 rounded-2xl overflow-hidden shadow-lg border-2 border-white">
-                                    <Image src="/logo.png" alt="Expert" fill className="object-cover" />
+                                    <Image src="/Aditi.jpeg" alt="Aditi Mohan" fill className="object-cover object-top" />
                                 </div>
                                 <div>
                                     <div className="flex items-center gap-2 mb-1">
                                         <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                                        <span className="text-[10px] font-bold text-green-600 uppercase tracking-widest">Available Next Week</span>
+                                        <span className="text-[10px] font-bold text-green-600 uppercase tracking-widest">Times shown in {userTimezone.replace('_', ' ')}</span>
                                     </div>
                                     <h3 className="text-lg font-bold text-primary-navy">{duration} Min Professional Session</h3>
-                                    <p className="text-sm text-gray-500">Video call or phone consultation with Aditi.</p>
+                                    <p className="text-sm text-gray-500">Video call or phone consultation with Aditi Mohan.</p>
                                 </div>
                             </div>
 
@@ -323,7 +417,7 @@ export default function BookingModal({ isOpen, onClose, initialDuration }: Booki
                             <div className="flex flex-col gap-4">
                                 <div className="flex items-center justify-between">
                                     <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Available Times</span>
-                                    <span className="text-[10px] font-bold text-gray-400">Timezone: Sydney (GMT+11)</span>
+                                    <span className="text-[10px] font-bold text-gray-400">All times shown in your local timezone</span>
                                 </div>
                                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                                     {loading ? (
@@ -335,13 +429,13 @@ export default function BookingModal({ isOpen, onClose, initialDuration }: Booki
                                             <button
                                                 key={i}
                                                 disabled={slot.isBooked}
-                                                onClick={() => handleSelectSlot(slot.time)}
+                                                onClick={() => handleSelectSlot(slot)}
                                                 className={`p-4 rounded-xl border text-sm font-bold transition-all text-center flex flex-col items-center justify-center gap-1 ${slot.isBooked
                                                     ? 'bg-gray-50 border-gray-100 text-gray-300 cursor-not-allowed'
                                                     : 'border-gray-100 text-primary-navy hover:border-accent-green hover:bg-accent-green/5'
                                                     }`}
                                             >
-                                                <span>{slot.time}</span>
+                                                <span>{slot.localTime}</span>
                                                 {slot.isBooked && (
                                                     <span className="text-[8px] uppercase tracking-widest text-red-300">Booked</span>
                                                 )}
@@ -359,7 +453,7 @@ export default function BookingModal({ isOpen, onClose, initialDuration }: Booki
 
                     {/* Step 3: Lead Form */}
                     {step === 3 && (
-                        <form onSubmit={handleSubmit} className="max-w-2xl mx-auto space-y-8">
+                        <form onSubmit={handleNext} className="max-w-2xl mx-auto space-y-8">
                             {/* Summary Card */}
                             <div className="flex items-center justify-between p-6 bg-accent-green/5 border border-accent-green/20 rounded-3xl">
                                 <div className="flex items-center gap-4">
@@ -368,7 +462,12 @@ export default function BookingModal({ isOpen, onClose, initialDuration }: Booki
                                     </div>
                                     <div>
                                         <div className="text-sm font-bold text-primary-navy">{duration} Min Consultation</div>
-                                        <div className="text-xs text-gray-500">{currentDay.name}, {currentDay.date} @ {formData.appointment_time}</div>
+                                        <div className="text-xs text-gray-500">
+                                            {currentDay.name}, {currentDay.date} @ {formData.local_display_time} (Your Time)
+                                        </div>
+                                        <div className="text-[10px] text-gray-400 mt-1 uppercase tracking-tight">
+                                            Equivalent to {formData.appointment_time} Sydney Time
+                                        </div>
                                     </div>
                                 </div>
                                 <Check className="w-6 h-6 text-accent-green" />
@@ -435,28 +534,210 @@ export default function BookingModal({ isOpen, onClose, initialDuration }: Booki
                             </div>
 
                             <button
-                                disabled={submitting}
                                 type="submit"
-                                className="w-full bg-primary-navy text-white py-5 rounded-3xl font-bold text-lg hover:bg-accent-green transition-all shadow-xl active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+                                className="w-full bg-primary-navy text-white py-5 rounded-3xl font-bold text-lg hover:bg-accent-green transition-all shadow-xl active:scale-95 flex items-center justify-center gap-2"
+                            >
+                                Continue to Questions
+                                <ChevronRight className="w-5 h-5" />
+                            </button>
+                        </form>
+                    )}
+
+                    {/* Step 4: Questionnaire */}
+                    {step === 4 && (
+                        <form onSubmit={handleNext} className="max-w-2xl mx-auto space-y-10">
+                            <div className="space-y-8">
+                                {/* Booking for someone else */}
+                                <div className="space-y-4">
+                                    <label className="text-sm font-bold text-primary-navy">Are you booking this appointment for someone else? <span className="text-red-500">*</span></label>
+                                    <div className="flex gap-8">
+                                        {['Yes', 'No'].map(opt => (
+                                            <label key={opt} className="flex items-center gap-3 cursor-pointer group">
+                                                <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${formData.bookingForSelf === opt ? 'border-accent-green bg-accent-green' : 'border-gray-200 group-hover:border-gray-300'}`}>
+                                                    {formData.bookingForSelf === opt && <div className="w-2 h-2 bg-white rounded-full" />}
+                                                </div>
+                                                <input
+                                                    type="radio"
+                                                    name="bookingForSelf"
+                                                    value={opt}
+                                                    className="hidden"
+                                                    onChange={e => setFormData({ ...formData, bookingForSelf: e.target.value })}
+                                                />
+                                                <span className={`text-sm font-medium ${formData.bookingForSelf === opt ? 'text-primary-navy' : 'text-gray-400'}`}>{opt}</span>
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Relationship (Conditional) */}
+                                {formData.bookingForSelf === 'Yes' && (
+                                    <div className="space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                                        <label className="text-sm font-bold text-primary-navy">If yes, what is your relationship to the person?</label>
+                                        <input
+                                            type="text"
+                                            className="w-full p-4 bg-gray-50 border border-transparent focus:bg-white focus:border-accent-green rounded-2xl transition-all outline-none text-sm"
+                                            value={formData.relationship}
+                                            onChange={e => setFormData({ ...formData, relationship: e.target.value })}
+                                        />
+                                    </div>
+                                )}
+
+                                {/* Nearest Office */}
+                                <div className="space-y-3">
+                                    <label className="text-sm font-bold text-primary-navy">Nearest MyVisa® Office to you is... <span className="text-red-500">*</span></label>
+                                    <select
+                                        required
+                                        className="w-full p-4 bg-gray-50 border border-transparent focus:bg-white focus:border-accent-green rounded-2xl transition-all outline-none text-sm appearance-none cursor-pointer"
+                                        value={formData.nearestOffice}
+                                        onChange={e => setFormData({ ...formData, nearestOffice: e.target.value })}
+                                    >
+                                        <option value="">Select an office...</option>
+                                        <option value="Sydney">Sydney, Australia</option>
+                                        <option value="Melbourne">Melbourne, Australia</option>
+                                        <option value="Brisbane">Brisbane, Australia</option>
+                                        <option value="Perth">Perth, Australia</option>
+                                        <option value="International">International / Online</option>
+                                    </select>
+                                </div>
+
+                                {/* Passport Country */}
+                                <div className="space-y-3">
+                                    <label className="text-sm font-bold text-primary-navy">What is your passport country? <span className="text-red-500">*</span></label>
+                                    <input
+                                        required
+                                        type="text"
+                                        className="w-full p-4 bg-gray-50 border border-transparent focus:bg-white focus:border-accent-green rounded-2xl transition-all outline-none text-sm"
+                                        value={formData.passportCountry}
+                                        onChange={e => setFormData({ ...formData, passportCountry: e.target.value })}
+                                    />
+                                </div>
+
+                                {/* Background Info */}
+                                <div className="space-y-3">
+                                    <label className="text-sm font-bold text-primary-navy">Give me some background information <span className="text-red-500">*</span></label>
+                                    <textarea
+                                        required
+                                        className="w-full p-4 bg-gray-50 border border-transparent focus:bg-white focus:border-accent-green rounded-2xl transition-all outline-none text-sm min-h-[120px]"
+                                        value={formData.backgroundInfo}
+                                        onChange={e => setFormData({ ...formData, backgroundInfo: e.target.value })}
+                                    />
+                                </div>
+
+                                {/* Deadline / Urgency */}
+                                <div className="space-y-3">
+                                    <label className="text-sm font-bold text-primary-navy">Is there any deadline/urgency? Any visa expiration? <span className="text-red-500">*</span></label>
+                                    <textarea
+                                        required
+                                        className="w-full p-4 bg-gray-50 border border-transparent focus:bg-white focus:border-accent-green rounded-2xl transition-all outline-none text-sm min-h-[80px]"
+                                        value={formData.deadlineUrgency}
+                                        onChange={e => setFormData({ ...formData, deadlineUrgency: e.target.value })}
+                                    />
+                                </div>
+                            </div>
+
+                            <button
+                                type="submit"
+                                className="w-full bg-primary-navy text-white py-5 rounded-3xl font-bold text-lg hover:bg-accent-green transition-all shadow-xl active:scale-95 flex items-center justify-center gap-2"
+                            >
+                                Review Your Booking
+                                <ChevronRight className="w-5 h-5" />
+                            </button>
+                        </form>
+                    )}
+
+                    {/* Step 5: Review & Payment */}
+                    {step === 5 && (
+                        <div className="max-w-2xl mx-auto space-y-8 animate-in fade-in zoom-in duration-300">
+                            <div className="bg-gray-50 rounded-[2.5rem] p-8 space-y-6">
+                                <h3 className="text-lg font-bold text-primary-navy border-b border-gray-200 pb-4">Booking Summary</h3>
+
+                                <div className="grid grid-cols-2 gap-y-4 text-sm">
+                                    <div className="text-gray-400 font-bold uppercase tracking-widest text-[10px]">Consultation</div>
+                                    <div className="text-primary-navy font-bold">{duration} Minute {duration === 15 ? 'Start' : 'Full'} Consultation</div>
+
+                                    <div className="text-gray-400 font-bold uppercase tracking-widest text-[10px]">Date & Time (Local)</div>
+                                    <div className="text-primary-navy font-bold">{currentDay.name}, {currentDay.date} @ {formData.local_display_time}</div>
+
+                                    <div className="text-gray-400 font-bold uppercase tracking-widest text-[10px]">Sydney Reference</div>
+                                    <div className="text-primary-navy font-bold">{formData.appointment_time} AEDT/AEST</div>
+
+                                    <div className="text-gray-400 font-bold uppercase tracking-widest text-[10px]">Client</div>
+                                    <div className="text-primary-navy font-bold">{formData.name}</div>
+
+                                    <div className="text-gray-400 font-bold uppercase tracking-widest text-[10px]">Email</div>
+                                    <div className="text-primary-navy font-bold">{formData.email}</div>
+
+                                    <div className="text-gray-400 font-bold uppercase tracking-widest text-[10px]">Country</div>
+                                    <div className="text-primary-navy font-bold">{formData.passportCountry}</div>
+                                </div>
+                            </div>
+
+                            <div className="bg-accent-green/5 border border-accent-green/20 rounded-3xl p-6 flex items-center justify-between">
+                                <div>
+                                    <div className="text-[10px] font-black text-accent-green uppercase tracking-[0.2em] mb-1">Total Due Now</div>
+                                    <div className="text-3xl font-black text-primary-navy">${duration === 15 ? '75' : '150'} <span className="text-sm font-medium text-gray-400">AUD</span></div>
+                                </div>
+                                <div className="text-right">
+                                    <span className="text-[10px] p-2 bg-accent-green/10 text-accent-green rounded-lg font-bold">Secure Payment</span>
+                                </div>
+                            </div>
+
+                            <button
+                                onClick={handleSubmit}
+                                disabled={submitting}
+                                className="w-full bg-primary-navy text-white py-6 rounded-[2rem] font-black text-xl hover:bg-black transition-all shadow-2xl shadow-primary-navy/20 active:scale-[0.98] flex items-center justify-center gap-3"
                             >
                                 {submitting ? (
                                     <>
-                                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                        Processing Request...
+                                        <div className="w-6 h-6 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
+                                        Processing...
                                     </>
                                 ) : (
                                     <>
-                                        Confirm Booking Request
-                                        <ChevronRight className="w-5 h-5" />
+                                        Pay & Confirm Booking
+                                        <Check className="w-6 h-6" />
                                     </>
                                 )}
                             </button>
-                            <p className="text-center text-[10px] text-gray-400 uppercase tracking-widest">
-                                By submitting, you agree to our terms and conditions.
+                            <p className="text-center text-[10px] text-gray-400 uppercase tracking-widest max-w-xs mx-auto">
+                                Secure checkout by Stripe. Your booking is not confirmed until payment is received.
                             </p>
-                        </form>
+                        </div>
                     )}
                 </div>
+
+                {/* Cancel Booking Footer */}
+                <div className="p-6 border-t border-gray-100 flex justify-center">
+                    <button
+                        onClick={() => setShowCancelConfirm(true)}
+                        className="text-xs font-bold text-gray-400 uppercase tracking-widest hover:text-red-500 transition-colors"
+                    >
+                        Cancel Booking
+                    </button>
+                </div>
+
+                {/* Confirmation Overlay */}
+                {showCancelConfirm && (
+                    <div className="absolute inset-0 z-[110] bg-white/95 backdrop-blur-md flex items-center justify-center p-8 animate-in fade-in duration-300">
+                        <div className="text-center max-w-sm">
+                            <h3 className="text-2xl font-black text-primary-navy mb-8 uppercase tracking-tight">Are you sure?</h3>
+                            <div className="flex gap-4">
+                                <button
+                                    onClick={() => { onClose(); setShowCancelConfirm(false); }}
+                                    className="flex-1 px-8 py-4 rounded-2xl bg-gray-50 text-gray-400 font-black text-xs uppercase tracking-widest hover:bg-gray-100 transition-all"
+                                >
+                                    Yes
+                                </button>
+                                <button
+                                    onClick={() => setShowCancelConfirm(false)}
+                                    className="flex-1 px-8 py-4 rounded-2xl bg-primary-navy text-white font-black text-xs uppercase tracking-widest shadow-xl shadow-primary-navy/20 hover:scale-105 transition-all"
+                                >
+                                    No
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

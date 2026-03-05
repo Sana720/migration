@@ -16,7 +16,7 @@ interface Blog {
     created_at: string;
 }
 
-export default function BlogsManager() {
+export default function ResourcesManager() {
     const supabase = createClient();
     const [blogs, setBlogs] = useState<Blog[]>([]);
     const [loading, setLoading] = useState(true);
@@ -167,8 +167,8 @@ export default function BlogsManager() {
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
-                    <h1 className="text-4xl font-extrabold text-primary-navy tracking-tight">Blog Posts</h1>
-                    <p className="text-gray-500 mt-2 font-medium">Create and manage your articles and news updates.</p>
+                    <h1 className="text-4xl font-extrabold text-primary-navy tracking-tight">Resources</h1>
+                    <p className="text-gray-500 mt-2 font-medium">Create and manage your articles, news updates, and expert resources.</p>
                 </div>
                 <button
                     onClick={() => handleOpenModal()}
@@ -185,7 +185,7 @@ export default function BlogsManager() {
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                     <input
                         type="text"
-                        placeholder="Search blogs by title or slug..."
+                        placeholder="Search resources by title or slug..."
                         className="pl-12 pr-6 py-4 bg-white border border-gray-100 rounded-2xl w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-accent-green transition-all"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
@@ -198,7 +198,7 @@ export default function BlogsManager() {
                 {loading ? (
                     <div className="p-20 text-center">
                         <div className="animate-spin w-10 h-10 border-4 border-accent-green border-t-transparent rounded-full mx-auto mb-4"></div>
-                        <p className="text-gray-500 font-bold">Loading blogs...</p>
+                        <p className="text-gray-500 font-bold">Loading resources...</p>
                     </div>
                 ) : filteredBlogs.length > 0 ? (
                     <div className="overflow-x-auto">
@@ -224,7 +224,7 @@ export default function BlogsManager() {
                                             </div>
                                         </td>
                                         <td className="px-8 py-6">
-                                            <code className="text-xs font-mono bg-gray-100 px-3 py-1.5 rounded-lg text-gray-600">/blogs/{blog.slug}</code>
+                                            <code className="text-xs font-mono bg-gray-100 px-3 py-1.5 rounded-lg text-gray-600">/resources/{blog.slug}</code>
                                         </td>
                                         <td className="px-8 py-6">
                                             <span className={`px-4 py-1.5 rounded-full text-xs font-bold ${blog.is_published ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
@@ -265,8 +265,8 @@ export default function BlogsManager() {
                         <div className="bg-gray-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
                             <BookOpen className="w-10 h-10 text-gray-300" />
                         </div>
-                        <h3 className="text-xl font-bold text-primary-navy">No blogs found</h3>
-                        <p className="text-gray-500 mt-2 font-medium">Get started by creating your first blog post.</p>
+                        <h3 className="text-xl font-bold text-primary-navy">No resources found</h3>
+                        <p className="text-gray-500 mt-2 font-medium">Get started by creating your first resource article.</p>
                         <button
                             onClick={() => handleOpenModal()}
                             className="mt-8 bg-primary-navy text-white px-8 py-4 rounded-2xl font-bold hover:bg-accent-green transition-all shadow-lg"
@@ -324,7 +324,7 @@ export default function BlogsManager() {
                                         className="w-full p-4 bg-gray-50 border border-transparent focus:bg-white focus:border-accent-green rounded-2xl transition-all outline-none"
                                         value={formData.author_name}
                                         onChange={(e) => setFormData({ ...formData, author_name: e.target.value })}
-                                        placeholder="e.g. Aditi Sharma"
+                                        placeholder="e.g. Aditi Mohan"
                                     />
                                 </div>
                                 <div className="space-y-2">

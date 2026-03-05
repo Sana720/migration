@@ -16,7 +16,7 @@ interface Blog {
     created_at: string;
 }
 
-export default async function BlogListingPage() {
+export default async function ResourcesListingPage() {
     const supabase = await createClient();
 
     const { data, error } = await supabase
@@ -30,7 +30,7 @@ export default async function BlogListingPage() {
     return (
         <PageLayout>
             <div className="bg-white min-h-screen">
-                {/* Hero section for Blog */}
+                {/* Hero section for Resources */}
                 <section className="relative pt-40 pb-24 px-4 bg-primary-navy text-white overflow-hidden">
                     {/* Background Image with Overlay */}
                     <div className="absolute inset-0 z-0">
@@ -55,7 +55,7 @@ export default async function BlogListingPage() {
                             Expert Insights • Forte Migration
                         </div>
                         <h1 className="text-5xl md:text-7xl font-black mb-6 tracking-tight leading-[1.1]">
-                            Latest News & <span className="text-accent-green italic">Insights</span>
+                            Expert <span className="text-accent-green italic">Resources</span>
                         </h1>
                         <p className="text-xl text-white/70 max-w-2xl mx-auto font-medium leading-relaxed">
                             Stay updated with the Australian migration policies, visa updates, and success stories.
@@ -75,7 +75,7 @@ export default async function BlogListingPage() {
                                 {blogs.map((blog: Blog) => (
                                     <Link
                                         key={blog.id}
-                                        href={`/blogs/${blog.slug}`}
+                                        href={`/resources/${blog.slug}`}
                                         className="group flex flex-col bg-white rounded-[2.5rem] overflow-hidden border border-gray-100 transition-all hover:shadow-2xl hover:-translate-y-2"
                                     >
                                         {/* Thumbnail */}
