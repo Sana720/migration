@@ -27,7 +27,7 @@ interface DayOption {
 
 export default function BookingModal({ isOpen, onClose, initialDuration }: BookingModalProps) {
     const supabase = createClient();
-    const [step, setStep] = useState<1 | 2 | 3 | 4 | 5>(1);
+    const [step, setStep] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
     const [showCancelConfirm, setShowCancelConfirm] = useState(false);
     const [duration, setDuration] = useState<15 | 40 | null>(initialDuration || null);
     const [selectedDayIndex, setSelectedDayIndex] = useState(0);
@@ -50,6 +50,12 @@ export default function BookingModal({ isOpen, onClose, initialDuration }: Booki
         deadlineUrgency: '',
         local_display_time: ''
     });
+
+    // Verification State
+    const [otp, setOtp] = useState('');
+    const [isEmailVerified, setIsEmailVerified] = useState(false);
+    const [verifyingOtp, setVerifyingOtp] = useState(false);
+    const [sendingOtp, setSendingOtp] = useState(false);
 
     const userTimezone = useMemo(() => {
         try {
@@ -76,6 +82,8 @@ export default function BookingModal({ isOpen, onClose, initialDuration }: Booki
                 setStep(1);
                 setDuration(null);
                 setShowCancelConfirm(false);
+                setIsEmailVerified(false);
+                setOtp('');
                 setFormData({
                     name: '', email: '', phone: '', message: '', appointment_time: '',
                     bookingForSelf: 'No', relationship: '', nearestOffice: '',
@@ -255,9 +263,56 @@ export default function BookingModal({ isOpen, onClose, initialDuration }: Booki
         setStep(3);
     };
 
-    const handleNext = (e?: React.FormEvent) => {
+    const handleSendOtp = async () => {
+        setSendingOtp(true);
+        try {
+            const res = await fetch('/api/auth/send-otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: formData.email })
+            });
+            if (!res.ok) throw new Error('Failed to send verification code.');
+            setStep(4);
+        } catch (err: any) {
+            alert(err.message);
+        } finally {
+            setSendingOtp(false);
+        }
+    };
+
+    const handleNext = async (e?: React.FormEvent) => {
         if (e) e.preventDefault();
+
+        // Handle Step 3 to Step 4 transition (Send OTP)
+        if (step === 3 && !isEmailVerified) {
+            await handleSendOtp();
+            return;
+        }
+
         setStep((step + 1) as any);
+    };
+
+    const handleVerifyOtp = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setVerifyingOtp(true);
+        try {
+            const res = await fetch('/api/auth/verify-otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: formData.email, otp })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                setIsEmailVerified(true);
+                setStep(5);
+            } else {
+                alert(data.error || 'Invalid code.');
+            }
+        } catch (err: any) {
+            alert('Verification failed: ' + err.message);
+        } finally {
+            setVerifyingOtp(false);
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -328,13 +383,13 @@ ${formData.message || 'None provided'}
                         )}
                         <div>
                             <h2 className="text-xl font-bold text-primary-navy">
-                                {step === 1 ? 'Select Service' : step === 2 ? 'Choose Time' : step === 3 ? 'Contact Details' : step === 4 ? 'Tell me more...' : 'Review & Payment'}
+                                {step === 1 ? 'Select Service' : step === 2 ? 'Choose Time' : step === 3 ? 'Contact Details' : step === 4 ? 'Verify Email' : step === 5 ? 'Tell me more...' : 'Review & Payment'}
                             </h2>
                             <div className="flex gap-1 mt-1">
-                                {[1, 2, 3, 4, 5].map(i => (
+                                {[1, 2, 3, 4, 5, 6].map(i => (
                                     <div
                                         key={i}
-                                        className={`h-1 w-8 rounded-full transition-all ${i <= step ? 'bg-accent-green' : 'bg-gray-100'}`}
+                                        className={`h-1 w-6 rounded-full transition-all ${i <= step ? 'bg-accent-green' : 'bg-gray-100'}`}
                                     />
                                 ))}
                             </div>
@@ -536,16 +591,87 @@ ${formData.message || 'None provided'}
 
                             <button
                                 type="submit"
+                                disabled={sendingOtp}
                                 className="w-full bg-primary-navy text-white py-5 rounded-3xl font-bold text-lg hover:bg-accent-green transition-all shadow-xl active:scale-95 flex items-center justify-center gap-2"
                             >
-                                Continue to Questions
-                                <ChevronRight className="w-5 h-5" />
+                                {sendingOtp ? (
+                                    <>
+                                        <RefreshCw className="w-5 h-5 animate-spin" />
+                                        Sending Code...
+                                    </>
+                                ) : (
+                                    <>
+                                        Continue to Verification
+                                        <ChevronRight className="w-5 h-5" />
+                                    </>
+                                )}
                             </button>
                         </form>
                     )}
 
-                    {/* Step 4: Questionnaire */}
+                    {/* Step 4: Email Verification */}
                     {step === 4 && (
+                        <div className="max-w-md mx-auto space-y-8 py-4">
+                            <div className="text-center space-y-3">
+                                <div className="w-20 h-20 bg-accent-green/10 text-accent-green rounded-full flex items-center justify-center mx-auto mb-6">
+                                    <Mail className="w-10 h-10" />
+                                </div>
+                                <h3 className="text-2xl font-black text-primary-navy">Verify your email</h3>
+                                <p className="text-gray-500 text-sm">
+                                    We've sent a 6-digit verification code to <br />
+                                    <span className="font-bold text-primary-navy">{formData.email}</span>
+                                </p>
+                            </div>
+
+                            <form onSubmit={handleVerifyOtp} className="space-y-6">
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-gray-400 uppercase tracking-widest text-center block">Enter 6-Digit Code</label>
+                                    <input
+                                        required
+                                        type="text"
+                                        maxLength={6}
+                                        placeholder="000000"
+                                        className="w-full text-center text-4xl font-black tracking-[0.5em] py-6 bg-gray-50 border-2 border-transparent focus:bg-white focus:border-accent-green rounded-[2rem] transition-all outline-none"
+                                        value={otp}
+                                        onChange={e => setOtp(e.target.value.replace(/\D/g, ''))}
+                                    />
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    disabled={verifyingOtp || otp.length !== 6}
+                                    className="w-full bg-primary-navy text-white py-5 rounded-3xl font-bold text-lg hover:bg-accent-green transition-all shadow-xl active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                >
+                                    {verifyingOtp ? (
+                                        <>
+                                            <RefreshCw className="w-5 h-5 animate-spin" />
+                                            Verifying...
+                                        </>
+                                    ) : (
+                                        <>
+                                            Verify & Continue
+                                            <ChevronRight className="w-5 h-5" />
+                                        </>
+                                    )}
+                                </button>
+                            </form>
+
+                            <div className="text-center pt-4">
+                                <button
+                                    type="button"
+                                    disabled={sendingOtp}
+                                    onClick={handleSendOtp}
+                                    className="text-sm font-bold text-gray-400 hover:text-primary-navy transition-colors underline underline-offset-4 flex items-center justify-center gap-2 mx-auto"
+                                >
+                                    {sendingOtp && <RefreshCw className="w-3 h-3 animate-spin" />}
+                                    {sendingOtp ? 'Resending...' : 'Resend code'}
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Step 5: Questionnaire */}
+                    {step === 5 && (
                         <form onSubmit={handleNext} className="max-w-2xl mx-auto space-y-10">
                             <div className="space-y-8">
                                 {/* Booking for someone else */}
@@ -844,8 +970,8 @@ ${formData.message || 'None provided'}
                         </form>
                     )}
 
-                    {/* Step 5: Review & Payment */}
-                    {step === 5 && (
+                    {/* Step 6: Review & Payment */}
+                    {step === 6 && (
                         <div className="max-w-2xl mx-auto space-y-8 animate-in fade-in zoom-in duration-300">
                             <div className="bg-gray-50 rounded-[2.5rem] p-8 space-y-6">
                                 <h3 className="text-lg font-bold text-primary-navy border-b border-gray-200 pb-4">Booking Summary</h3>

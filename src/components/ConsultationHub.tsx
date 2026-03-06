@@ -25,11 +25,11 @@ export default function ConsultationHub() {
                         <p className="text-xs text-accent-green mb-8 font-black uppercase tracking-widest text-center group-hover:text-[#20B2AA] transition-colors">Initial Assessment</p>
 
                         <ul className="text-left space-y-4 mb-10 text-gray-600 w-full max-w-[240px] mx-auto">
-                            <li className="flex items-center gap-3 font-bold group-hover:text-primary-navy group-hover:font-black transition-all">
+                            <li className="flex items-center gap-3 font-bold group-hover:text-primary-navy transition-all">
                                 <span className="text-accent-green group-hover:text-[#20B2AA]">✓</span>
                                 Initial eligibility assessment
                             </li>
-                            <li className="flex items-center gap-3 font-bold group-hover:text-primary-navy group-hover:font-black transition-all">
+                            <li className="flex items-center gap-3 font-bold group-hover:text-primary-navy transition-all">
                                 <span className="text-accent-green group-hover:text-[#20B2AA]">✓</span>
                                 Quick visa query resolution
                             </li>
@@ -50,11 +50,11 @@ export default function ConsultationHub() {
                         <p className="text-xs text-primary-navy mb-8 font-black uppercase tracking-widest text-center group-hover:text-[#20B2AA] transition-colors">Comprehensive Review</p>
 
                         <ul className="text-left space-y-4 mb-10 text-gray-600 w-full max-w-[240px] mx-auto">
-                            <li className="flex items-center gap-3 font-bold group-hover:text-primary-navy group-hover:font-black transition-all">
+                            <li className="flex items-center gap-3 font-bold group-hover:text-primary-navy transition-all">
                                 <span className="text-accent-green group-hover:text-[#20B2AA]">★</span>
                                 Detailed path mapping
                             </li>
-                            <li className="flex items-center gap-3 font-bold group-hover:text-primary-navy group-hover:font-black transition-all">
+                            <li className="flex items-center gap-3 font-bold group-hover:text-primary-navy transition-all">
                                 <span className="text-accent-green group-hover:text-[#20B2AA]">✓</span>
                                 Comprehensive document review
                             </li>

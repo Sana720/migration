@@ -47,20 +47,34 @@ CREATE TABLE availability (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- OTP Verifications table
+CREATE TABLE otp_verifications (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    email TEXT NOT NULL,
+    otp TEXT NOT NULL,
+    expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- Enable RLS
 ALTER TABLE pages ENABLE ROW LEVEL SECURITY;
 ALTER TABLE menu_items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE leads ENABLE ROW LEVEL SECURITY;
 ALTER TABLE availability ENABLE ROW LEVEL SECURITY;
+ALTER TABLE otp_verifications ENABLE ROW LEVEL SECURITY;
 
 -- Policies
 CREATE POLICY "Public Read Pages" ON pages FOR SELECT USING (is_published = true);
 CREATE POLICY "Public Read Menu" ON menu_items FOR SELECT USING (true);
 CREATE POLICY "Public Insert Leads" ON leads FOR INSERT WITH CHECK (true);
 CREATE POLICY "Public Read Availability" ON availability FOR SELECT USING (is_active = true);
+CREATE POLICY "Public Insert OTP" ON otp_verifications FOR INSERT WITH CHECK (true);
+CREATE POLICY "Public Read OTP" ON otp_verifications FOR SELECT USING (true);
 
 -- Admin policies (requires auth.uid() check)
 CREATE POLICY "Admin All Pages" ON pages FOR ALL TO authenticated USING (true);
 CREATE POLICY "Admin All Menu" ON menu_items FOR ALL TO authenticated USING (true);
 CREATE POLICY "Admin All Leads" ON leads FOR ALL TO authenticated USING (true);
 CREATE POLICY "Admin All Availability" ON availability FOR ALL TO authenticated USING (true);
+CREATE POLICY "Admin All OTP" ON otp_verifications FOR ALL TO authenticated USING (true);
+
