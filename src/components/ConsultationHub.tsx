@@ -18,24 +18,27 @@ export default function ConsultationHub() {
                     {/* Strategy Session Card */}
                     <div
                         onClick={() => openBooking(15)}
-                        className="group bg-white p-10 rounded-[3.5rem] shadow-xl border-t-8 border-primary-navy cursor-pointer transform hover:scale-[1.02] hover:border-[#20B2AA] hover:shadow-[0_40px_80px_rgba(32,178,170,0.2)] transition-all duration-500 flex flex-col items-center"
+                        className="group relative bg-primary-navy p-10 rounded-[3.5rem] shadow-xl cursor-pointer transition-all duration-700 ease-in-out hover:-translate-y-3 hover:bg-accent-green hover:shadow-[0_40px_80px_rgba(32,178,170,0.3)] flex flex-col items-center"
                     >
-                        <div className="text-primary-navy font-black text-2xl mb-4 group-hover:text-[#20B2AA] transition-colors">Strategy Session</div>
-                        <div className="text-5xl font-black mb-4 text-primary-navy group-hover:text-[#20B2AA] transition-colors">15 <span className="text-2xl font-normal text-gray-400 group-hover:text-[#20B2AA] transition-colors">min</span></div>
-                        <p className="text-xs text-accent-green mb-8 font-black uppercase tracking-widest text-center group-hover:text-[#20B2AA] transition-colors">Initial Assessment</p>
+                        <div className="text-white/80 font-bold text-lg mb-2 uppercase tracking-widest">Initial Assessment</div>
+                        <div className="text-white font-black text-3xl mb-4 text-center">Strategy Session</div>
 
-                        <ul className="text-left space-y-4 mb-10 text-gray-600 w-full max-w-[240px] mx-auto">
-                            <li className="flex items-center gap-3 font-bold group-hover:text-primary-navy transition-all">
-                                <span className="text-accent-green group-hover:text-[#20B2AA]">✓</span>
+                        <div className="text-6xl font-black mb-6 text-white flex items-baseline gap-2">
+                            15 <span className="text-2xl font-medium text-white/60">min</span>
+                        </div>
+
+                        <ul className="text-left space-y-4 mb-10 text-white/90 w-full max-w-[240px] mx-auto border-t border-white/10 pt-8 mt-4">
+                            <li className="flex items-center gap-3">
+                                <span className="bg-white/10 p-1 rounded-full text-white">✓</span>
                                 Initial eligibility assessment
                             </li>
-                            <li className="flex items-center gap-3 font-bold group-hover:text-primary-navy transition-all">
-                                <span className="text-accent-green group-hover:text-[#20B2AA]">✓</span>
+                            <li className="flex items-center gap-3">
+                                <span className="bg-white/10 p-1 rounded-full text-white">✓</span>
                                 Quick visa query resolution
                             </li>
                         </ul>
 
-                        <button className="w-full bg-primary-navy text-white py-4 rounded-2xl font-black text-lg group-hover:bg-[#20B2AA] transition-all shadow-lg">
+                        <button className="w-full bg-white text-primary-navy py-4 rounded-2xl font-black text-lg transition-all duration-500 group-hover:text-accent-green group-hover:scale-[1.05] shadow-lg">
                             Book 15 Min Chat
                         </button>
                     </div>
@@ -43,24 +46,27 @@ export default function ConsultationHub() {
                     {/* End-to-End Planning Card */}
                     <div
                         onClick={() => openBooking(40)}
-                        className="group bg-white p-10 rounded-[3.5rem] shadow-2xl border-t-8 border-primary-navy scale-105 cursor-pointer transform hover:scale-[1.07] hover:border-[#20B2AA] hover:shadow-[0_40px_80px_rgba(32,178,170,0.3)] transition-all duration-500 flex flex-col items-center z-10"
+                        className="group relative bg-accent-green p-10 rounded-[3.5rem] shadow-xl cursor-pointer transition-all duration-700 ease-in-out hover:-translate-y-3 hover:bg-primary-navy hover:shadow-[0_40px_80px_rgba(0,32,91,0.3)] flex flex-col items-center z-10"
                     >
-                        <div className="text-primary-navy font-black text-2xl mb-4 group-hover:text-[#20B2AA] transition-colors">Deep Dive Session</div>
-                        <div className="text-5xl font-black mb-4 text-primary-navy group-hover:text-[#20B2AA] transition-colors">40 <span className="text-2xl font-normal text-gray-400 group-hover:text-[#20B2AA] transition-colors">min</span></div>
-                        <p className="text-xs text-primary-navy mb-8 font-black uppercase tracking-widest text-center group-hover:text-[#20B2AA] transition-colors">Comprehensive Review</p>
+                        <div className="text-white/80 font-bold text-lg mb-2 uppercase tracking-widest">Comprehensive Review</div>
+                        <div className="text-white font-black text-3xl mb-4 text-center">Deep Dive Session</div>
 
-                        <ul className="text-left space-y-4 mb-10 text-gray-600 w-full max-w-[240px] mx-auto">
-                            <li className="flex items-center gap-3 font-bold group-hover:text-primary-navy transition-all">
-                                <span className="text-accent-green group-hover:text-[#20B2AA]">★</span>
+                        <div className="text-6xl font-black mb-6 text-white flex items-baseline gap-2">
+                            40 <span className="text-2xl font-medium text-white/60">min</span>
+                        </div>
+
+                        <ul className="text-left space-y-4 mb-10 text-white/90 w-full max-w-[240px] mx-auto border-t border-white/10 pt-8 mt-4">
+                            <li className="flex items-center gap-3">
+                                <span className="bg-white/10 p-1 rounded-full text-white">★</span>
                                 Detailed path mapping
                             </li>
-                            <li className="flex items-center gap-3 font-bold group-hover:text-primary-navy transition-all">
-                                <span className="text-accent-green group-hover:text-[#20B2AA]">✓</span>
+                            <li className="flex items-center gap-3">
+                                <span className="bg-white/10 p-1 rounded-full text-white">✓</span>
                                 Comprehensive document review
                             </li>
                         </ul>
 
-                        <button className="w-full bg-primary-navy text-white py-4 rounded-2xl font-black text-lg group-hover:bg-[#20B2AA] transition-all shadow-lg">
+                        <button className="w-full bg-white text-accent-green py-4 rounded-2xl font-black text-lg transition-all duration-500 group-hover:text-primary-navy group-hover:scale-[1.05] shadow-lg">
                             Book 40 Min Session
                         </button>
                     </div>
