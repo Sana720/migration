@@ -17,6 +17,7 @@ export default function Header({ onEnquire, forceSolid = false }: HeaderProps) {
     const [isScrolled, setIsScrolled] = useState(false);
     const effectiveIsScrolled = isScrolled || forceSolid;
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [activeSection, setActiveSection] = useState<string | null>(null);
 
     const menuItems = [
         { id: '1', label: 'Home', href: '/' },
@@ -32,6 +33,19 @@ export default function Header({ onEnquire, forceSolid = false }: HeaderProps) {
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
+
+    // Track active section on homepage via IntersectionObserver
+    useEffect(() => {
+        if (!isHomePage) { setActiveSection(null); return; }
+        const section = document.getElementById('services');
+        if (!section) return;
+        const observer = new IntersectionObserver(
+            ([entry]) => setActiveSection(entry.isIntersecting ? 'services' : null),
+            { rootMargin: '-30% 0px -30% 0px', threshold: 0 }
+        );
+        observer.observe(section);
+        return () => observer.disconnect();
+    }, [isHomePage]);
 
     // Prevent body scroll when mobile menu is open
     useEffect(() => {
@@ -82,16 +96,24 @@ export default function Header({ onEnquire, forceSolid = false }: HeaderProps) {
                     <nav className={`hidden lg:flex items-center space-x-10 transition-colors duration-500 ${effectiveIsScrolled ? "text-primary-navy" : "text-white"
                         }`}>
                         <div className="flex items-center space-x-8">
-                            {menuItems.map(item => (
-                                <Link
-                                    key={item.id}
-                                    href={item.href}
-                                    className="font-bold text-sm hover:text-accent-green transition-colors uppercase tracking-widest relative group"
-                                >
-                                    {item.label}
-                                    <span className="absolute -bottom-2 left-0 w-0 h-0.5 bg-accent-green transition-all group-hover:w-full"></span>
-                                </Link>
-                            ))}
+                            {menuItems.map(item => {
+                                const isActive =
+                                    item.href === '/#services'
+                                        ? activeSection === 'services'
+                                        : item.href === '/'
+                                            ? pathname === '/' && activeSection !== 'services'
+                                            : pathname.startsWith(item.href.split('#')[0]) && item.href.split('#')[0] !== '/';
+                                return (
+                                    <Link
+                                        key={item.id}
+                                        href={item.href}
+                                        className={`font-bold text-sm hover:text-accent-green transition-colors uppercase tracking-widest relative group ${isActive ? 'text-accent-green' : ''}`}
+                                    >
+                                        {item.label}
+                                        <span className={`absolute -bottom-2 left-0 h-0.5 bg-accent-green transition-all ${isActive ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
+                                    </Link>
+                                );
+                            })}
                         </div>
                         <div className="h-4 w-[1px] bg-gray-300/30"></div>
                         <Link
@@ -148,26 +170,34 @@ export default function Header({ onEnquire, forceSolid = false }: HeaderProps) {
                         <p className="text-[11px] font-black text-gray-400 uppercase tracking-[0.4em] mb-8">Navigation</p>
 
                         <nav className="flex flex-col space-y-4">
-                            {menuItems.map((item, i) => (
-                                <Link
-                                    key={item.id}
-                                    href={item.href}
-                                    onClick={() => setIsMobileMenuOpen(false)}
-                                    className="group flex flex-col py-2"
-                                >
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-3xl font-black text-primary-navy group-hover:text-accent-green transition-colors duration-300">
-                                            {item.label}
-                                        </span>
-                                        <div className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 group-hover:border-accent-green group-hover:bg-accent-green/5">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5 text-accent-green">
-                                                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                                            </svg>
+                            {menuItems.map((item, i) => {
+                                const isActive =
+                                    item.href === '/#services'
+                                        ? activeSection === 'services'
+                                        : item.href === '/'
+                                            ? pathname === '/' && activeSection !== 'services'
+                                            : pathname.startsWith(item.href.split('#')[0]) && item.href.split('#')[0] !== '/';
+                                return (
+                                    <Link
+                                        key={item.id}
+                                        href={item.href}
+                                        onClick={() => setIsMobileMenuOpen(false)}
+                                        className="group flex flex-col py-2"
+                                    >
+                                        <div className="flex items-center justify-between">
+                                            <span className={`text-3xl font-black transition-colors duration-300 ${isActive ? 'text-accent-green' : 'text-primary-navy group-hover:text-accent-green'}`}>
+                                                {item.label}
+                                            </span>
+                                            <div className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 group-hover:border-accent-green group-hover:bg-accent-green/5">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5 text-accent-green">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                                                </svg>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div className="h-[2px] w-0 bg-accent-green mt-2 transition-all duration-500 group-hover:w-full max-w-[40px]"></div>
-                                </Link>
-                            ))}
+                                        <div className={`h-[2px] bg-accent-green mt-2 transition-all duration-500 max-w-[40px] ${isActive ? 'w-full' : 'w-0 group-hover:w-full'}`}></div>
+                                    </Link>
+                                );
+                            })}
                         </nav>
 
                         {/* Support Info Block */}
