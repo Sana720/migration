@@ -18,7 +18,7 @@ export default function ConsultationHub() {
                     {/* Strategy Session Card */}
                     <div
                         onClick={() => openBooking(15)}
-                        className="group relative bg-primary-navy p-10 rounded-[3.5rem] shadow-xl cursor-pointer transition-all duration-700 ease-in-out hover:-translate-y-3 hover:bg-accent-green hover:shadow-[0_40px_80px_rgba(32,178,170,0.3)] flex flex-col items-center"
+                        className="group relative bg-primary-navy p-10 rounded-[3.5rem] shadow-xl cursor-pointer transition-all duration-700 ease-in-out hover:-translate-y-3 hover:bg-primary-navy/90 hover:shadow-[0_40px_80px_rgba(0,32,91,0.2)] flex flex-col items-center"
                     >
                         <div className="text-white/80 font-bold text-lg mb-2 uppercase tracking-widest">Initial Assessment</div>
                         <div className="text-white font-black text-3xl mb-4 text-center">Strategy Session</div>
@@ -38,7 +38,7 @@ export default function ConsultationHub() {
                             </li>
                         </ul>
 
-                        <button className="w-full bg-white text-primary-navy py-4 rounded-2xl font-black text-lg transition-all duration-500 group-hover:text-accent-green group-hover:scale-[1.05] shadow-lg">
+                        <button className="w-full bg-white text-primary-navy py-4 rounded-2xl font-black text-lg transition-all duration-500 group-hover:bg-accent-green group-hover:text-white group-hover:scale-[1.05] shadow-lg">
                             Book 15 Min Chat
                         </button>
                     </div>
@@ -46,7 +46,7 @@ export default function ConsultationHub() {
                     {/* End-to-End Planning Card */}
                     <div
                         onClick={() => openBooking(40)}
-                        className="group relative bg-accent-green p-10 rounded-[3.5rem] shadow-xl cursor-pointer transition-all duration-700 ease-in-out hover:-translate-y-3 hover:bg-primary-navy hover:shadow-[0_40px_80px_rgba(0,32,91,0.3)] flex flex-col items-center z-10"
+                        className="group relative bg-accent-green p-10 rounded-[3.5rem] shadow-xl cursor-pointer transition-all duration-700 ease-in-out hover:-translate-y-3 hover:bg-accent-green/90 hover:shadow-[0_40px_80px_rgba(32,178,170,0.3)] flex flex-col items-center z-10"
                     >
                         <div className="text-white/80 font-bold text-lg mb-2 uppercase tracking-widest">Comprehensive Review</div>
                         <div className="text-white font-black text-3xl mb-4 text-center">Deep Dive Session</div>
@@ -66,7 +66,7 @@ export default function ConsultationHub() {
                             </li>
                         </ul>
 
-                        <button className="w-full bg-white text-accent-green py-4 rounded-2xl font-black text-lg transition-all duration-500 group-hover:text-primary-navy group-hover:scale-[1.05] shadow-lg">
+                        <button className="w-full bg-white text-accent-green py-4 rounded-2xl font-black text-lg transition-all duration-500 group-hover:bg-primary-navy group-hover:text-white group-hover:scale-[1.05] shadow-lg">
                             Book 40 Min Session
                         </button>
                     </div>

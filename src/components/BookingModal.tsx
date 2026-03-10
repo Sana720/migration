@@ -9,6 +9,7 @@ interface BookingModalProps {
     isOpen: boolean;
     onClose: () => void;
     initialDuration?: 15 | 40 | null;
+    initialService?: string | null;
 }
 
 interface AvailabilitySlot {
@@ -25,7 +26,7 @@ interface DayOption {
     dayNum: number; // 1-7
 }
 
-export default function BookingModal({ isOpen, onClose, initialDuration }: BookingModalProps) {
+export default function BookingModal({ isOpen, onClose, initialDuration, initialService }: BookingModalProps) {
     const supabase = createClient();
     const [step, setStep] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
     const [showCancelConfirm, setShowCancelConfirm] = useState(false);
@@ -48,7 +49,8 @@ export default function BookingModal({ isOpen, onClose, initialDuration }: Booki
         passportCountry: '',
         backgroundInfo: '',
         deadlineUrgency: '',
-        local_display_time: ''
+        local_display_time: '',
+        visaType: ''
     });
 
     // Verification State
@@ -70,6 +72,7 @@ export default function BookingModal({ isOpen, onClose, initialDuration }: Booki
     // Initialize state and handle opening/closing
     useEffect(() => {
         if (isOpen) {
+            setFormData(prev => ({ ...prev, visaType: initialService || '' }));
             if (initialDuration) {
                 setDuration(initialDuration);
                 setStep(2);
@@ -88,11 +91,11 @@ export default function BookingModal({ isOpen, onClose, initialDuration }: Booki
                     name: '', email: '', phone: '', message: '', appointment_time: '',
                     bookingForSelf: 'No', relationship: '', nearestOffice: '',
                     passportCountry: '', backgroundInfo: '', deadlineUrgency: '',
-                    local_display_time: ''
+                    local_display_time: '', visaType: ''
                 });
             }, 300);
         }
-    }, [isOpen, initialDuration]);
+    }, [isOpen, initialDuration, initialService]);
 
     // Reactively fetch availability when duration or open state changes
     useEffect(() => {
@@ -321,10 +324,10 @@ export default function BookingModal({ isOpen, onClose, initialDuration }: Booki
         try {
             const combinedMessage = `
 **Booking Details**
+- Visa Type: ${formData.visaType || 'General Enquiry'}
 - Booking for someone else? ${formData.bookingForSelf}
 ${formData.relationship ? `- Relationship: ${formData.relationship}` : ''}
 - Local Time: ${formData.local_display_time} (${userTimezone})
-- Nearest Office: ${formData.nearestOffice}
 - Passport Country: ${formData.passportCountry}
 - Background Info: ${formData.backgroundInfo}
 - Deadline/Urgency: ${formData.deadlineUrgency}
@@ -365,6 +368,10 @@ ${formData.message || 'None provided'}
             {/* Backdrop */}
             <div
                 className="absolute inset-0 bg-primary-navy/40 backdrop-blur-md transition-opacity duration-300"
+                onClick={() => {
+                    if (step <= 2) onClose();
+                    else setShowCancelConfirm(true);
+                }}
             ></div>
 
             {/* Modal Body */}
@@ -395,6 +402,16 @@ ${formData.message || 'None provided'}
                             </div>
                         </div>
                     </div>
+
+                    <button
+                        onClick={() => {
+                            if (step <= 2) onClose();
+                            else setShowCancelConfirm(true);
+                        }}
+                        className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-400 hover:text-primary-navy"
+                    >
+                        <X className="w-6 h-6" />
+                    </button>
                 </div>
 
                 <div className="flex-1 overflow-y-auto p-6 md:p-10">
@@ -1039,14 +1056,16 @@ ${formData.message || 'None provided'}
                 </div>
 
                 {/* Cancel Booking Footer */}
-                <div className="p-6 border-t border-gray-100 flex justify-center">
-                    <button
-                        onClick={() => setShowCancelConfirm(true)}
-                        className="text-xs font-bold text-gray-400 uppercase tracking-widest hover:text-red-500 transition-colors"
-                    >
-                        Cancel Booking
-                    </button>
-                </div>
+                {step >= 3 && (
+                    <div className="p-6 border-t border-gray-100 flex justify-center">
+                        <button
+                            onClick={() => setShowCancelConfirm(true)}
+                            className="text-xs font-bold text-gray-400 uppercase tracking-widest hover:text-red-500 transition-colors"
+                        >
+                            Cancel Booking
+                        </button>
+                    </div>
+                )}
 
                 {/* Confirmation Overlay */}
                 {showCancelConfirm && (

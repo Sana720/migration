@@ -7,7 +7,7 @@ import BookingModal from './BookingModal';
 import ScrollToTop from './ScrollToTop';
 
 interface BookingContextType {
-    openBooking: (duration?: 15 | 40 | null) => void;
+    openBooking: (duration?: 15 | 40 | null, serviceId?: string | null) => void;
 }
 
 const BookingContext = createContext<BookingContextType | undefined>(undefined);
@@ -26,9 +26,11 @@ interface PageLayoutProps {
 export default function PageLayout({ children, forceSolidHeader = false }: PageLayoutProps) {
     const [isBookingOpen, setIsBookingOpen] = useState(false);
     const [selectedDuration, setSelectedDuration] = useState<15 | 40 | null>(null);
+    const [selectedService, setSelectedService] = useState<string | null>(null);
 
-    const openBooking = (duration: 15 | 40 | null = null) => {
+    const openBooking = (duration: 15 | 40 | null = null, serviceId: string | null = null) => {
         setSelectedDuration(duration);
+        setSelectedService(serviceId);
         setIsBookingOpen(true);
     };
 
@@ -47,6 +49,7 @@ export default function PageLayout({ children, forceSolidHeader = false }: PageL
                     isOpen={isBookingOpen}
                     onClose={() => setIsBookingOpen(false)}
                     initialDuration={selectedDuration}
+                    initialService={selectedService}
                 />
 
                 <ScrollToTop />

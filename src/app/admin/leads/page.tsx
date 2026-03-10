@@ -12,12 +12,14 @@ import {
     Clock,
     CheckCircle2,
     XCircle,
-    Archive,
     Eye,
     FileText,
     Bell,
     CalendarClock,
-    Loader2
+    Loader2,
+    Trash2,
+    ChevronRight,
+    ChevronLeft
 } from 'lucide-react';
 
 interface Lead {
@@ -38,11 +40,14 @@ export default function LeadsManager() {
     const [leads, setLeads] = useState<Lead[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const leadsPerPage = 5;
     const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
     const [reschedulingLead, setReschedulingLead] = useState<Lead | null>(null);
     const [newDate, setNewDate] = useState('');
     const [newTime, setNewTime] = useState('');
     const [sendingReminderId, setSendingReminderId] = useState<string | null>(null);
+    const [leadToDelete, setLeadToDelete] = useState<Lead | null>(null);
 
     useEffect(() => {
         fetchLeads();
@@ -114,10 +119,55 @@ export default function LeadsManager() {
         setLoading(false);
     };
 
+    const handleStatusChange = async (leadId: string, newStatus: string) => {
+        setLoading(true);
+        const { error } = await supabase
+            .from('leads')
+            .update({ status: newStatus })
+            .eq('id', leadId);
+
+        if (error) {
+            alert('Error updating status: ' + error.message);
+        } else {
+            fetchLeads();
+        }
+        setLoading(false);
+    };
+
+    const handleDelete = async () => {
+        if (!leadToDelete) return;
+        setLoading(true);
+        const { error } = await supabase
+            .from('leads')
+            .delete()
+            .eq('id', leadToDelete.id);
+
+        if (error) {
+            alert('Error deleting lead: ' + error.message);
+        } else {
+            setLeadToDelete(null);
+            fetchLeads();
+        }
+        setLoading(false);
+    };
+
     const filteredLeads = leads.filter(lead =>
         lead.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         lead.email?.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    // Pagination Logic
+    const indexOfLastLead = currentPage * leadsPerPage;
+    const indexOfFirstLead = indexOfLastLead - leadsPerPage;
+    const currentLeads = filteredLeads.slice(indexOfFirstLead, indexOfLastLead);
+    const totalPages = Math.ceil(filteredLeads.length / leadsPerPage);
+
+    const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+
+    // Reset pagination when searching
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm]);
 
     return (
         <div className="space-y-10">
@@ -128,10 +178,6 @@ export default function LeadsManager() {
                     <p className="text-gray-500 mt-2 font-medium">Manage all incoming migration booking enquiries.</p>
                 </div>
                 <div className="flex gap-4">
-                    <button className="flex items-center gap-3 bg-white border border-gray-100 text-gray-600 px-6 py-4 rounded-2xl font-bold hover:shadow-lg transition-all">
-                        <Archive className="w-5 h-5" />
-                        <span>Archived</span>
-                    </button>
                     <button className="flex items-center gap-3 bg-primary-navy text-white px-8 py-4 rounded-2xl font-bold hover:bg-accent-green transition-all shadow-lg">
                         <Filter className="w-5 h-5" />
                         <span>Filter</span>
@@ -171,7 +217,7 @@ export default function LeadsManager() {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-50">
-                                {filteredLeads.map((lead) => (
+                                {currentLeads.map((lead) => (
                                     <tr key={lead.id} className="group hover:bg-gray-50 transition-colors">
                                         <td className="px-8 py-8">
                                             <div className="flex items-center gap-5">
@@ -211,11 +257,25 @@ export default function LeadsManager() {
                                             </div>
                                         </td>
                                         <td className="px-8 py-8">
-                                            <div className="flex items-center gap-2">
-                                                <div className={`w-2 h-2 rounded-full ${lead.status === 'new' ? 'bg-blue-500 animate-pulse' :
+                                            <div className="relative inline-block">
+                                                <select
+                                                    value={lead.status}
+                                                    onChange={(e) => handleStatusChange(lead.id, e.target.value)}
+                                                    className={`appearance-none pl-8 pr-10 py-2 rounded-full text-sm font-bold border-none cursor-pointer transition-all shadow-sm hover:shadow-md focus:ring-2 focus:ring-offset-2 focus:outline-none ${lead.status === 'new' ? 'bg-blue-50 text-blue-600 focus:ring-blue-500' :
+                                                        lead.status === 'contacted' ? 'bg-amber-50 text-amber-600 focus:ring-amber-500' :
+                                                            'bg-green-50 text-green-600 focus:ring-green-500'
+                                                        }`}
+                                                >
+                                                    <option value="new">New</option>
+                                                    <option value="contacted">Contacted</option>
+                                                    <option value="converted">Converted</option>
+                                                </select>
+                                                <div className={`absolute left-3 top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full ${lead.status === 'new' ? 'bg-blue-500 animate-pulse' :
                                                     lead.status === 'contacted' ? 'bg-amber-500' : 'bg-green-500'
-                                                    }`}></div>
-                                                <span className="text-sm font-bold text-primary-navy capitalize">{lead.status}</span>
+                                                    } pointer-events-none`}></div>
+                                                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                                                    <ChevronRight className="w-4 h-4 rotate-90 text-current opacity-50" />
+                                                </div>
                                             </div>
                                         </td>
                                         <td className="px-8 py-8">
@@ -224,46 +284,108 @@ export default function LeadsManager() {
                                             </div>
                                         </td>
                                         <td className="px-8 py-8 text-right">
-                                            <div className="flex items-center justify-end gap-3">
-                                                <button
-                                                    onClick={() => setSelectedLead(lead)}
-                                                    className="p-3 bg-white text-gray-400 hover:text-primary-navy shadow-sm hover:shadow-md rounded-xl transition-all"
-                                                    title="View Details"
-                                                >
-                                                    <Eye className="w-5 h-5" />
-                                                </button>
-                                                <button
-                                                    onClick={() => handleSendReminder(lead)}
-                                                    disabled={sendingReminderId === lead.id}
-                                                    className="p-3 bg-white text-gray-400 hover:text-blue-500 shadow-sm hover:shadow-md rounded-xl transition-all disabled:opacity-50"
-                                                    title="Send Reminder Email"
-                                                >
-                                                    {sendingReminderId === lead.id ? (
-                                                        <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
-                                                    ) : (
-                                                        <Bell className="w-5 h-5" />
-                                                    )}
-                                                </button>
-                                                <button
-                                                    onClick={() => setReschedulingLead(lead)}
-                                                    className="p-3 bg-white text-gray-400 hover:text-amber-500 shadow-sm hover:shadow-md rounded-xl transition-all"
-                                                    title="Reschedule Appointment"
-                                                >
-                                                    <CalendarClock className="w-5 h-5" />
-                                                </button>
-                                                <button
-                                                    onClick={() => updateStatus(lead.id, 'archived')}
-                                                    className="p-3 bg-white text-gray-400 hover:text-red-500 shadow-sm hover:shadow-md rounded-xl transition-all"
-                                                    title="Archive"
-                                                >
-                                                    <XCircle className="w-5 h-5" />
-                                                </button>
+                                            <div className="flex items-center justify-end gap-3 font-sans">
+                                                <div className="relative group/view">
+                                                    <button
+                                                        onClick={() => setSelectedLead(lead)}
+                                                        className="p-3 bg-white text-gray-400 hover:text-primary-navy shadow-sm hover:shadow-md rounded-xl transition-all"
+                                                    >
+                                                        <Eye className="w-5 h-5" />
+                                                    </button>
+                                                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-primary-navy text-white text-[10px] font-black uppercase tracking-widest rounded-lg opacity-0 invisible group-hover/view:opacity-100 group-hover/view:visible transition-all whitespace-nowrap z-50 shadow-xl pointer-events-none">
+                                                        View Details
+                                                        <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-primary-navy"></div>
+                                                    </div>
+                                                </div>
+
+                                                <div className="relative group/remind">
+                                                    <button
+                                                        onClick={() => handleSendReminder(lead)}
+                                                        disabled={sendingReminderId === lead.id}
+                                                        className="p-3 bg-white text-gray-400 hover:text-blue-500 shadow-sm hover:shadow-md rounded-xl transition-all disabled:opacity-50"
+                                                    >
+                                                        {sendingReminderId === lead.id ? (
+                                                            <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
+                                                        ) : (
+                                                            <Bell className="w-5 h-5" />
+                                                        )}
+                                                    </button>
+                                                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-primary-navy text-white text-[10px] font-black uppercase tracking-widest rounded-lg opacity-0 invisible group-hover/remind:opacity-100 group-hover/remind:visible transition-all whitespace-nowrap z-50 shadow-xl pointer-events-none">
+                                                        Send Reminder
+                                                        <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-primary-navy"></div>
+                                                    </div>
+                                                </div>
+
+                                                <div className="relative group/resched">
+                                                    <button
+                                                        onClick={() => setReschedulingLead(lead)}
+                                                        className="p-3 bg-white text-gray-400 hover:text-amber-500 shadow-sm hover:shadow-md rounded-xl transition-all"
+                                                    >
+                                                        <CalendarClock className="w-5 h-5" />
+                                                    </button>
+                                                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-primary-navy text-white text-[10px] font-black uppercase tracking-widest rounded-lg opacity-0 invisible group-hover/resched:opacity-100 group-hover/resched:visible transition-all whitespace-nowrap z-50 shadow-xl pointer-events-none">
+                                                        Reschedule
+                                                        <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-primary-navy"></div>
+                                                    </div>
+                                                </div>
+
+                                                <div className="relative group/del">
+                                                    <button
+                                                        onClick={() => setLeadToDelete(lead)}
+                                                        className="p-3 bg-white text-gray-400 hover:text-red-600 shadow-sm hover:shadow-md rounded-xl transition-all"
+                                                    >
+                                                        <Trash2 className="w-5 h-5" />
+                                                    </button>
+                                                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-red-600 text-white text-[10px] font-black uppercase tracking-widest rounded-lg opacity-0 invisible group-hover/del:opacity-100 group-hover/del:visible transition-all whitespace-nowrap z-50 shadow-xl pointer-events-none">
+                                                        Delete
+                                                        <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-red-600"></div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
+
+                        {/* Pagination Controls */}
+                        {filteredLeads.length > 0 && (
+                            <div className="px-8 py-6 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
+                                <div className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+                                    Showing {indexOfFirstLead + 1} to {Math.min(indexOfLastLead, filteredLeads.length)} of {filteredLeads.length} leads
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <button
+                                        onClick={() => paginate(currentPage - 1)}
+                                        disabled={currentPage === 1}
+                                        className="p-2.5 bg-white border border-gray-100 rounded-xl text-gray-400 hover:text-primary-navy hover:shadow-md transition-all disabled:opacity-30 disabled:hover:shadow-none"
+                                    >
+                                        <ChevronLeft className="w-5 h-5" />
+                                    </button>
+
+                                    {[...Array(totalPages)].map((_, i) => (
+                                        <button
+                                            key={i + 1}
+                                            onClick={() => paginate(i + 1)}
+                                            className={`w-10 h-10 rounded-xl text-xs font-black transition-all ${currentPage === i + 1
+                                                ? 'bg-primary-navy text-white shadow-lg'
+                                                : 'bg-white border border-gray-100 text-gray-400 hover:text-primary-navy hover:shadow-md'
+                                                }`}
+                                        >
+                                            {i + 1}
+                                        </button>
+                                    ))}
+
+                                    <button
+                                        onClick={() => paginate(currentPage + 1)}
+                                        disabled={currentPage === totalPages}
+                                        className="p-2.5 bg-white border border-gray-100 rounded-xl text-gray-400 hover:text-primary-navy hover:shadow-md transition-all disabled:opacity-30 disabled:hover:shadow-none"
+                                    >
+                                        <ChevronRight className="w-5 h-5" />
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 ) : (
                     <div className="p-32 text-center">
@@ -359,12 +481,14 @@ export default function LeadsManager() {
                                         return (
                                             <div className="space-y-6">
                                                 <div className="grid grid-cols-1 gap-4">
-                                                    {details.map((item, i) => (
-                                                        <div key={i} className="bg-white border border-gray-100 border-l-4 border-l-primary-navy p-5 rounded-2xl shadow-sm">
-                                                            <p className="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-1.5">{item.question}</p>
-                                                            <p className="font-bold text-primary-navy text-base">{item.answer || <span className="text-gray-300 italic">Not provided</span>}</p>
-                                                        </div>
-                                                    ))}
+                                                    {details
+                                                        .filter(item => !item.question.toLowerCase().includes('nearest office'))
+                                                        .map((item, i) => (
+                                                            <div key={i} className="bg-white border border-gray-100 border-l-4 border-l-primary-navy p-5 rounded-2xl shadow-sm">
+                                                                <p className="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-1.5">{item.question}</p>
+                                                                <p className="font-bold text-primary-navy text-base">{item.answer || <span className="text-gray-300 italic">Not provided</span>}</p>
+                                                            </div>
+                                                        ))}
                                                 </div>
                                                 {additionalMessage.trim() && additionalMessage.trim() !== 'None provided' && (
                                                     <div className="bg-amber-50/50 border border-amber-100 border-l-4 border-l-amber-400 p-6 rounded-2xl shadow-sm mt-6">
@@ -430,6 +554,37 @@ export default function LeadsManager() {
                         >
                             Confirm Reschedule
                         </button>
+                    </div>
+                </div>
+            )}
+
+            {/* Deletion Confirmation Modal */}
+            {leadToDelete && (
+                <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 lg:p-10">
+                    <div className="absolute inset-0 bg-primary-navy/80 backdrop-blur-md animate-in fade-in duration-300" onClick={() => setLeadToDelete(null)} />
+                    <div className="bg-white rounded-[2.5rem] p-10 max-w-md w-full relative z-10 shadow-2xl text-center animate-in zoom-in duration-300">
+                        <div className="w-20 h-20 bg-red-50 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                            <Trash2 className="w-10 h-10 text-red-600" />
+                        </div>
+                        <h2 className="text-3xl font-black text-primary-navy mb-4 tracking-tight uppercase">Are you sure?</h2>
+                        <p className="text-gray-500 font-medium mb-10 leading-relaxed">
+                            You are about to permanently delete <span className="font-bold text-primary-navy">{leadToDelete.name}&apos;s</span> lead. This action cannot be undone.
+                        </p>
+
+                        <div className="flex gap-4">
+                            <button
+                                onClick={() => setLeadToDelete(null)}
+                                className="flex-1 px-8 py-5 rounded-2xl bg-gray-50 text-gray-400 font-black text-xs uppercase tracking-widest hover:bg-gray-100 transition-all"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleDelete}
+                                className="flex-1 px-8 py-5 rounded-2xl bg-red-600 text-white font-black text-xs uppercase tracking-widest shadow-xl shadow-red-200 hover:scale-105 active:scale-95 transition-all"
+                            >
+                                Delete Now
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

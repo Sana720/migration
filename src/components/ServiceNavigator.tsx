@@ -6,7 +6,7 @@ import { useBooking } from "./PageLayout";
 const services = [
     {
         id: "skilled",
-        name: "Skilled",
+        name: "Skilled Migration",
         icon: (
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
@@ -16,7 +16,7 @@ const services = [
     },
     {
         id: "partner",
-        name: "Partner",
+        name: "Partner Visa",
         icon: (
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
@@ -26,7 +26,7 @@ const services = [
     },
     {
         id: "employer",
-        name: "Employer",
+        name: "Employer Sponsored Visa",
         icon: (
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Z" />
@@ -35,18 +35,8 @@ const services = [
         color: "bg-indigo-50 text-indigo-600 border-indigo-100"
     },
     {
-        id: "business",
-        name: "Business",
-        icon: (
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l.43.43a.75.75 0 001.06 0l4.5-4.5.43.43a.75.75 0 001.06 0L21.75 3m-3.75 0h3.75v3.75m-3.75-3.75l3.75 3.75" />
-            </svg>
-        ),
-        color: "bg-emerald-50 text-emerald-600 border-emerald-100"
-    },
-    {
         id: "student",
-        name: "Student",
+        name: "Student Visa",
         icon: (
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.438 60.438 0 00-.491 6.347A48.62 48.62 0 0112 20.904a48.62 48.62 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.636 50.636 0 00-2.658-.813A59.906 59.906 0 0112 3.493a59.903 59.903 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5Zm0 0v-3.675A56.756 56.756 0 0112 8.25c2.474 0 4.862.158 7.203.465V15m-14.453 0H6.75m10.5 0h1.703" />
@@ -56,7 +46,7 @@ const services = [
     },
     {
         id: "family",
-        name: "Family",
+        name: "Family Visa",
         icon: (
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
@@ -66,7 +56,7 @@ const services = [
     },
     {
         id: "visitor",
-        name: "Visitor",
+        name: "Visitor Visa",
         icon: (
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
@@ -76,7 +66,7 @@ const services = [
     },
     {
         id: "citizenship",
-        name: "Resident",
+        name: "Resident Return Visa",
         icon: (
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
@@ -86,7 +76,7 @@ const services = [
     },
     {
         id: "urgent",
-        name: "Urgent",
+        name: "Urgent Visa Support",
         icon: (
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
@@ -116,7 +106,7 @@ const services = [
     },
     {
         id: "ministerial",
-        name: "Ministerial",
+        name: "Ministerial Intervention",
         icon: (
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z" />
@@ -156,7 +146,10 @@ export default function ServiceNavigator() {
 
             <button
                 disabled={!active}
-                onClick={() => openBooking()}
+                onClick={() => {
+                    const selectedService = services.find(s => s.id === active);
+                    openBooking(null, selectedService?.name);
+                }}
                 className={`w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all opacity-100 ${active
                     ? "bg-accent-green text-white hover:bg-primary-navy shadow-lg shadow-green-200"
                     : "bg-gray-100 text-gray-400 cursor-not-allowed"
