@@ -84,7 +84,7 @@ export default async function ResourcesListingPage() {
                                                 src={blog.thumbnail_url || 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&q=80&w=800'}
                                                 alt={blog.title}
                                                 fill
-                                                className="object-cover transition-transform duration-500 group-hover:scale-110"
+                                                className="object-contain bg-gray-50 transition-transform duration-500 group-hover:scale-105"
                                             />
                                             <div className="absolute top-6 left-6">
                                                 <span className="bg-white/90 backdrop-blur-md px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest text-primary-navy">

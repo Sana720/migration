@@ -283,7 +283,7 @@ function HomeContent() {
                   <p className="text-gray-500 mb-10 text-sm font-medium leading-[1.6]">{visa.desc}</p>
                   <div className="mt-auto">
                     <button
-                      onClick={() => openBooking()}
+                      onClick={() => openBooking(null, visa.title)}
                       className="text-xs font-black uppercase tracking-[0.2em] text-primary-navy flex items-center gap-3 group-hover:gap-5 transition-all">
                       Discover Eligibility <span className="text-accent-green text-lg">→</span>
                     </button>
@@ -303,16 +303,16 @@ function HomeContent() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto text-sm md:text-base items-stretch">
             <div className="group bg-white p-10 rounded-[3.5rem] shadow-xl border-t-8 border-primary-navy hover:border-accent-green transform hover:scale-[1.02] transition-all flex flex-col h-full">
-              <div className="text-primary-navy font-bold text-2xl mb-4">Strategy Session</div>
-              <div className="text-5xl font-extrabold mb-4 text-primary-navy group-hover:text-accent-green transition-colors">15 <span className="text-2xl font-normal text-gray-400 group-hover:text-accent-green transition-colors">min</span></div>
-              <p className="text-xs text-primary-navy mb-8 font-bold uppercase tracking-widest text-center">Initial Assessment</p>
+              <div className="text-primary-navy group-hover:text-accent-green transition-colors font-bold text-2xl mb-4">Strategy Session</div>
+              <div className="text-5xl font-extrabold mb-4 text-primary-navy">15 <span className="text-2xl font-normal text-gray-400">min</span></div>
+              <p className="text-xs text-accent-green group-hover:text-primary-navy transition-colors mb-8 font-bold uppercase tracking-widest text-center">Initial Assessment</p>
               <ul className="text-left space-y-4 mb-10 text-gray-600 flex-grow">
-                <li className="flex items-center gap-3 font-bold text-primary-navy">
-                  <span className="text-primary-navy">★</span>
+                <li className="flex items-center gap-3 text-primary-navy">
+                  <span className="text-primary-navy group-hover:text-accent-green transition-colors">★</span>
                   Initial eligibility assessment
                 </li>
-                <li className="flex items-center gap-3 font-bold text-primary-navy">
-                  <span className="text-primary-navy">★</span>
+                <li className="flex items-center gap-3 text-primary-navy">
+                  <span className="text-primary-navy group-hover:text-accent-green transition-colors">★</span>
                   Quick visa query resolution
                 </li>
               </ul>
@@ -324,16 +324,16 @@ function HomeContent() {
             </div>
 
             <div className="group bg-white p-10 rounded-[3.5rem] shadow-xl border-t-8 border-primary-navy hover:border-accent-green transform hover:scale-[1.05] transition-all z-10 flex flex-col h-full">
-              <div className="text-primary-navy font-bold text-2xl mb-4">Deep Dive Session</div>
-              <div className="text-5xl font-extrabold mb-4 text-primary-navy group-hover:text-accent-green transition-colors">40 <span className="text-2xl font-normal text-gray-400 group-hover:text-accent-green transition-colors">min</span></div>
-              <p className="text-xs text-primary-navy mb-8 font-bold uppercase tracking-widest text-center">Comprehensive Review</p>
+              <div className="text-primary-navy group-hover:text-accent-green transition-colors font-bold text-2xl mb-4">Deep Dive Session</div>
+              <div className="text-5xl font-extrabold mb-4 text-primary-navy">40 <span className="text-2xl font-normal text-gray-400">min</span></div>
+              <p className="text-xs text-accent-green group-hover:text-primary-navy transition-colors mb-8 font-bold uppercase tracking-widest text-center">Comprehensive Review</p>
               <ul className="text-left space-y-4 mb-10 text-gray-600 flex-grow">
-                <li className="flex items-center gap-3 font-bold text-primary-navy">
-                  <span className="text-primary-navy">★</span>
+                <li className="flex items-center gap-3 text-primary-navy">
+                  <span className="text-primary-navy group-hover:text-accent-green transition-colors">★</span>
                   Detailed Path way
                 </li>
-                <li className="flex items-center gap-3 font-bold text-primary-navy">
-                  <span className="text-primary-navy">★</span>
+                <li className="flex items-center gap-3 text-primary-navy">
+                  <span className="text-primary-navy group-hover:text-accent-green transition-colors">★</span>
                   Comprehensive document review
                 </li>
               </ul>

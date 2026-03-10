@@ -45,12 +45,13 @@ export default async function ResourceDetailPage({ params }: PageProps) {
             <div className="bg-white min-h-screen">
                 {/* Hero Header */}
                 <section className="relative pt-48 pb-20 px-4 bg-primary-navy text-white overflow-hidden">
-                    <div className="absolute inset-0 opacity-20 pointer-events-none">
+                    <div className="absolute inset-0 opacity-10 pointer-events-none">
                         <Image
-                            src={blog.thumbnail_url || 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&q=80&w=1200'}
+                            src="/aboriginal-bg.png"
                             alt="Background"
                             fill
-                            className="object-cover"
+                            className="object-cover scale-105"
+                            priority
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-primary-navy to-transparent" />
                     </div>
@@ -117,12 +118,12 @@ export default async function ResourceDetailPage({ params }: PageProps) {
 
                         {/* Main Body */}
                         <div className="flex-1">
-                            <div className="relative aspect-[16/9] w-full rounded-[3rem] overflow-hidden shadow-2xl mb-16 border-8 border-white">
+                            <div className="relative aspect-[16/9] w-full rounded-[3rem] overflow-hidden shadow-2xl mb-16 border-8 border-white bg-gray-50">
                                 <Image
                                     src={blog.thumbnail_url || 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&q=80&w=1200'}
                                     alt={blog.title}
                                     fill
-                                    className="object-cover"
+                                    className="object-contain"
                                 />
                             </div>
 

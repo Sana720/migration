@@ -18,14 +18,14 @@ export default function ConsultationHub() {
                     <div className="group bg-white p-10 rounded-[3.5rem] shadow-xl border-t-8 border-primary-navy hover:border-accent-green transform hover:scale-[1.02] transition-all flex flex-col h-full">
                         <div className="text-primary-navy font-bold text-2xl mb-4">Strategy Session</div>
                         <div className="text-5xl font-extrabold mb-4 text-primary-navy group-hover:text-accent-green transition-colors">15 <span className="text-2xl font-normal text-gray-400 group-hover:text-accent-green transition-colors">min</span></div>
-                        <p className="text-xs text-primary-navy mb-8 font-bold uppercase tracking-widest text-center">Initial Assessment</p>
+                        <p className="text-xs text-accent-green group-hover:text-primary-navy transition-colors mb-8 font-bold uppercase tracking-widest text-center">Initial Assessment</p>
                         <ul className="text-left space-y-4 mb-10 text-gray-600 flex-grow">
-                            <li className="flex items-center gap-3 font-bold text-primary-navy">
-                                <span className="text-primary-navy">★</span>
+                            <li className="flex items-center gap-3 text-primary-navy">
+                                <span className="text-primary-navy group-hover:text-accent-green transition-colors">★</span>
                                 Initial eligibility assessment
                             </li>
-                            <li className="flex items-center gap-3 font-bold text-primary-navy">
-                                <span className="text-primary-navy">★</span>
+                            <li className="flex items-center gap-3 text-primary-navy">
+                                <span className="text-primary-navy group-hover:text-accent-green transition-colors">★</span>
                                 Quick visa query resolution
                             </li>
                         </ul>
@@ -39,14 +39,14 @@ export default function ConsultationHub() {
                     <div className="group bg-white p-10 rounded-[3.5rem] shadow-xl border-t-8 border-primary-navy hover:border-accent-green transform hover:scale-[1.05] transition-all z-10 flex flex-col h-full">
                         <div className="text-primary-navy font-bold text-2xl mb-4">Deep Dive Session</div>
                         <div className="text-5xl font-extrabold mb-4 text-primary-navy group-hover:text-accent-green transition-colors">40 <span className="text-2xl font-normal text-gray-400 group-hover:text-accent-green transition-colors">min</span></div>
-                        <p className="text-xs text-primary-navy mb-8 font-bold uppercase tracking-widest text-center">Comprehensive Review</p>
+                        <p className="text-xs text-accent-green group-hover:text-primary-navy transition-colors mb-8 font-bold uppercase tracking-widest text-center">Comprehensive Review</p>
                         <ul className="text-left space-y-4 mb-10 text-gray-600 flex-grow">
-                            <li className="flex items-center gap-3 font-bold text-primary-navy">
-                                <span className="text-primary-navy">★</span>
+                            <li className="flex items-center gap-3 text-primary-navy">
+                                <span className="text-primary-navy group-hover:text-accent-green transition-colors">★</span>
                                 Detailed Path way
                             </li>
-                            <li className="flex items-center gap-3 font-bold text-primary-navy">
-                                <span className="text-primary-navy">★</span>
+                            <li className="flex items-center gap-3 text-primary-navy">
+                                <span className="text-primary-navy group-hover:text-accent-green transition-colors">★</span>
                                 Comprehensive document review
                             </li>
                         </ul>
