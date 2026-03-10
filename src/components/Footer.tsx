@@ -40,10 +40,9 @@ export default function Footer() {
                         <h4 className="font-bold mb-6 text-lg uppercase tracking-wider">Services</h4>
                         <ul className="space-y-4 text-sm text-gray-400">
                             <li><button className="hover:text-accent-green transition-colors">Skilled Migration</button></li>
-                            <li><button className="hover:text-accent-green transition-colors">Partner & Spousal</button></li>
+                            <li><button className="hover:text-accent-green transition-colors">Partner Visa</button></li>
                             <li><button className="hover:text-accent-green transition-colors">Employer Sponsored</button></li>
-                            <li><button className="hover:text-accent-green transition-colors">Business & Investor</button></li>
-                            <li><button className="hover:text-accent-green transition-colors">Student & Graduate</button></li>
+                            <li><button className="hover:text-accent-green transition-colors">Student & Graduate Visa</button></li>
                             <li><button className="hover:text-accent-green transition-colors">Parent & Child</button></li>
                         </ul>
                     </div>

@@ -8,11 +8,11 @@ function AboutCTA() {
     return (
         <section className="py-24 bg-bg-cream/30">
             <div className="container mx-auto px-4 text-center">
-                <h2 className="text-3xl md:text-5xl font-black text-primary-navy mb-8">Ready to start your journey?</h2>
+                <h2 className="text-3xl md:text-5xl font-black text-primary-navy mb-8">Ready to start?</h2>
                 <button
                     onClick={() => openBooking()}
                     className="bg-primary-navy text-white px-12 py-5 rounded-3xl font-black text-xl hover:bg-accent-green transition-all shadow-xl hover:shadow-2xl">
-                    Book a Strategy Call
+                    Book Consultation
                 </button>
             </div>
         </section>
@@ -62,7 +62,7 @@ export default function AboutPage() {
                         <div className="text-center mb-20">
                             <div className="text-accent-green font-black text-xs uppercase tracking-[0.4em] mb-4">Leadership</div>
                             <h2 className="text-3xl md:text-5xl text-primary-navy font-black leading-tight">
-                                Principle Migration Agent
+                                Principal Migration Agent
                             </h2>
                         </div>
 

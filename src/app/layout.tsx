@@ -11,9 +11,9 @@ export const metadata: Metadata = {
   title: "Forte Migration | Expert Australian Immigration Services",
   description: "Navigate the complexities of Australian immigration with expert guidance. Specializing in skilled, student, and family migration.",
   icons: {
-    icon: "/logo.png",
-    shortcut: "/logo.png",
-    apple: "/logo.png",
+    icon: "/icon.png",
+    shortcut: "/icon.png",
+    apple: "/icon.png",
   }
 };
 

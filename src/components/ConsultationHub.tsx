@@ -7,67 +7,53 @@ export default function ConsultationHub() {
     const { openBooking } = useBooking();
 
     return (
-        <section className="pt-8 pb-20 bg-bg-cream/30 md:pt-12">
+        <section className="py-20 bg-bg-cream/30">
             <div className="container mx-auto px-4 md:px-8 text-center">
-                <h2 className="text-3xl md:text-5xl mb-6 font-bold text-primary-navy tracking-tight">Ready to Start?</h2>
+                <h2 className="text-3xl md:text-5xl mb-6 font-bold text-primary-navy">Ready to Start?</h2>
                 <p className="text-xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed">
                     Book a professional consultation with our migration experts today.
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto text-sm md:text-base items-stretch">
-                    {/* Strategy Session Card */}
-                    <div
-                        onClick={() => openBooking(15)}
-                        className="group relative bg-primary-navy p-10 rounded-[3.5rem] shadow-xl cursor-pointer transition-all duration-700 ease-in-out hover:-translate-y-3 hover:bg-primary-navy/90 hover:shadow-[0_40px_80px_rgba(0,32,91,0.2)] flex flex-col items-center"
-                    >
-                        <div className="text-white/80 font-bold text-lg mb-2 uppercase tracking-widest">Initial Assessment</div>
-                        <div className="text-white font-black text-3xl mb-4 text-center">Strategy Session</div>
-
-                        <div className="text-6xl font-black mb-6 text-white flex items-baseline gap-2">
-                            15 <span className="text-2xl font-medium text-white/60">min</span>
-                        </div>
-
-                        <ul className="text-left space-y-4 mb-10 text-white/90 w-full max-w-[240px] mx-auto border-t border-white/10 pt-8 mt-4">
-                            <li className="flex items-center gap-3">
-                                <span className="bg-white/10 p-1 rounded-full text-white">✓</span>
+                    <div className="group bg-white p-10 rounded-[3.5rem] shadow-xl border-t-8 border-primary-navy hover:border-accent-green transform hover:scale-[1.02] transition-all flex flex-col h-full">
+                        <div className="text-primary-navy font-bold text-2xl mb-4">Strategy Session</div>
+                        <div className="text-5xl font-extrabold mb-4 text-primary-navy group-hover:text-accent-green transition-colors">15 <span className="text-2xl font-normal text-gray-400 group-hover:text-accent-green transition-colors">min</span></div>
+                        <p className="text-xs text-primary-navy mb-8 font-bold uppercase tracking-widest text-center">Initial Assessment</p>
+                        <ul className="text-left space-y-4 mb-10 text-gray-600 flex-grow">
+                            <li className="flex items-center gap-3 font-bold text-primary-navy">
+                                <span className="text-primary-navy">★</span>
                                 Initial eligibility assessment
                             </li>
-                            <li className="flex items-center gap-3">
-                                <span className="bg-white/10 p-1 rounded-full text-white">✓</span>
+                            <li className="flex items-center gap-3 font-bold text-primary-navy">
+                                <span className="text-primary-navy">★</span>
                                 Quick visa query resolution
                             </li>
                         </ul>
-
-                        <button className="w-full bg-white text-primary-navy py-4 rounded-2xl font-black text-lg transition-all duration-500 group-hover:bg-accent-green group-hover:text-white group-hover:scale-[1.05] shadow-lg">
-                            Book 15 Min Chat
+                        <button
+                            onClick={() => openBooking(15)}
+                            className="w-full mt-auto bg-primary-navy text-white py-4 rounded-2xl font-bold text-lg hover:bg-accent-green group-hover:bg-accent-green transition-all shadow-lg">
+                            Book 15 minutes session
                         </button>
                     </div>
 
-                    {/* End-to-End Planning Card */}
-                    <div
-                        onClick={() => openBooking(40)}
-                        className="group relative bg-accent-green p-10 rounded-[3.5rem] shadow-xl cursor-pointer transition-all duration-700 ease-in-out hover:-translate-y-3 hover:bg-accent-green/90 hover:shadow-[0_40px_80px_rgba(32,178,170,0.3)] flex flex-col items-center z-10"
-                    >
-                        <div className="text-white/80 font-bold text-lg mb-2 uppercase tracking-widest">Comprehensive Review</div>
-                        <div className="text-white font-black text-3xl mb-4 text-center">Deep Dive Session</div>
-
-                        <div className="text-6xl font-black mb-6 text-white flex items-baseline gap-2">
-                            40 <span className="text-2xl font-medium text-white/60">min</span>
-                        </div>
-
-                        <ul className="text-left space-y-4 mb-10 text-white/90 w-full max-w-[240px] mx-auto border-t border-white/10 pt-8 mt-4">
-                            <li className="flex items-center gap-3">
-                                <span className="bg-white/10 p-1 rounded-full text-white">★</span>
-                                Detailed path mapping
+                    <div className="group bg-white p-10 rounded-[3.5rem] shadow-xl border-t-8 border-primary-navy hover:border-accent-green transform hover:scale-[1.05] transition-all z-10 flex flex-col h-full">
+                        <div className="text-primary-navy font-bold text-2xl mb-4">Deep Dive Session</div>
+                        <div className="text-5xl font-extrabold mb-4 text-primary-navy group-hover:text-accent-green transition-colors">40 <span className="text-2xl font-normal text-gray-400 group-hover:text-accent-green transition-colors">min</span></div>
+                        <p className="text-xs text-primary-navy mb-8 font-bold uppercase tracking-widest text-center">Comprehensive Review</p>
+                        <ul className="text-left space-y-4 mb-10 text-gray-600 flex-grow">
+                            <li className="flex items-center gap-3 font-bold text-primary-navy">
+                                <span className="text-primary-navy">★</span>
+                                Detailed Path way
                             </li>
-                            <li className="flex items-center gap-3">
-                                <span className="bg-white/10 p-1 rounded-full text-white">✓</span>
+                            <li className="flex items-center gap-3 font-bold text-primary-navy">
+                                <span className="text-primary-navy">★</span>
                                 Comprehensive document review
                             </li>
                         </ul>
-
-                        <button className="w-full bg-white text-accent-green py-4 rounded-2xl font-black text-lg transition-all duration-500 group-hover:bg-primary-navy group-hover:text-white group-hover:scale-[1.05] shadow-lg">
-                            Book 40 Min Session
+                        <button
+                            onClick={() => openBooking(40)}
+                            className="w-full mt-auto bg-primary-navy text-white py-4 rounded-2xl font-bold text-lg hover:bg-accent-green group-hover:bg-accent-green transition-all shadow-lg">
+                            Book 40 minutes session
                         </button>
                     </div>
                 </div>
