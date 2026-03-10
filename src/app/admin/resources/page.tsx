@@ -13,6 +13,7 @@ interface Blog {
     thumbnail_url: string;
     is_published: boolean;
     author_name: string;
+    published_at: string;
     created_at: string;
 }
 
@@ -30,6 +31,7 @@ export default function ResourcesManager() {
         excerpt: '',
         thumbnail_url: '',
         author_name: '',
+        created_at: new Date().toISOString().split('T')[0],
         is_published: true
     });
     const [saving, setSaving] = useState(false);
@@ -63,6 +65,7 @@ export default function ResourcesManager() {
                 excerpt: blog.excerpt || '',
                 thumbnail_url: blog.thumbnail_url || '',
                 author_name: blog.author_name || '',
+                created_at: blog.created_at ? blog.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
                 is_published: blog.is_published
             });
         } else {
@@ -74,6 +77,7 @@ export default function ResourcesManager() {
                 excerpt: '',
                 thumbnail_url: '',
                 author_name: '',
+                created_at: new Date().toISOString().split('T')[0],
                 is_published: true
             });
         }
@@ -318,13 +322,23 @@ export default function ResourcesManager() {
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
-                                    <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Author Name</label>
+                                    <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Author Name <span className="text-gray-300 font-normal normal-case tracking-normal">(optional)</span></label>
                                     <input
                                         type="text"
                                         className="w-full p-4 bg-gray-50 border border-transparent focus:bg-white focus:border-accent-green rounded-2xl transition-all outline-none"
                                         value={formData.author_name}
                                         onChange={(e) => setFormData({ ...formData, author_name: e.target.value })}
                                         placeholder="e.g. Aditi Mohan"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Article Date</label>
+                                    <input
+                                        type="date"
+                                        required
+                                        className="w-full p-4 bg-gray-50 border border-transparent focus:bg-white focus:border-accent-green rounded-2xl transition-all outline-none"
+                                        value={formData.created_at}
+                                        onChange={(e) => setFormData({ ...formData, created_at: e.target.value })}
                                     />
                                 </div>
                                 <div className="space-y-2">

@@ -273,7 +273,10 @@ function HomeContent() {
               }
             ]
               .map((visa, i) => (
-                <div key={i} className="group bg-white p-10 rounded-[3rem] border border-primary-navy/5 hover:border-accent-green hover:shadow-2xl transition-all duration-500 flex flex-col h-full relative overflow-hidden shadow-sm">
+                <button
+                  key={i}
+                  onClick={() => openBooking(null, visa.title)}
+                  className="group bg-white p-10 rounded-[3rem] border border-primary-navy/5 hover:border-accent-green hover:shadow-2xl transition-all duration-500 flex flex-col h-full relative overflow-hidden shadow-sm text-left w-full cursor-pointer">
                   <div className="absolute top-[-5%] right-[-5%] text-7xl opacity-[0.03] group-hover:opacity-[0.07] transition-all rotate-12">{visa.icon}</div>
                   <div className="text-accent-green font-black text-xs mb-4 flex items-center gap-2">
                     <span className="w-8 h-[2px] bg-accent-green"></span>
@@ -282,13 +285,11 @@ function HomeContent() {
                   <h3 className="text-2xl font-black text-primary-navy mb-4 group-hover:text-accent-green transition-colors">{visa.title}</h3>
                   <p className="text-gray-500 mb-10 text-sm font-medium leading-[1.6]">{visa.desc}</p>
                   <div className="mt-auto">
-                    <button
-                      onClick={() => openBooking(null, visa.title)}
-                      className="text-xs font-black uppercase tracking-[0.2em] text-primary-navy flex items-center gap-3 group-hover:gap-5 transition-all">
+                    <span className="text-xs font-black uppercase tracking-[0.2em] text-primary-navy flex items-center gap-3 group-hover:gap-5 transition-all">
                       Discover Eligibility <span className="text-accent-green text-lg">→</span>
-                    </button>
+                    </span>
                   </div>
-                </div>
+                </button>
               ))}
           </div>
         </div>
