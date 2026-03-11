@@ -18,37 +18,33 @@ export default function Footer() {
             <div className="container mx-auto relative z-10">
                 <div className="grid grid-cols-[1.2fr_1fr] lg:grid-cols-4 gap-8 md:gap-12 mb-20">
                     {/* Left Column (Mobile): Logo + Consult */}
-                    <div className="col-span-1 flex flex-col gap-16 lg:contents">
-                        <div className="space-y-6 lg:order-1">
-                            <div className="relative w-56 h-14 lg:w-80 lg:h-20 mb-4">
+                    <div className="col-span-1 flex flex-col gap-12 lg:contents">
+                        {/* Description Section (Mobile: Order 1) */}
+                        <div className="lg:order-1 order-1 space-y-6">
+                            {/* Logo (Desktop Only here) */}
+                            <div className="hidden lg:block relative lg:w-80 lg:h-20 mb-8">
                                 <Image
                                     src="/logo.png"
                                     alt="Forte Migration Logo"
                                     fill
-                                    className="object-contain object-left"
-                                    style={{
-                                        filter: `
-                                            drop-shadow(0 0 1px white) 
-                                            drop-shadow(0 0 1px white) 
-                                            drop-shadow(0 0 1px white) 
-                                            drop-shadow(0 0 2px white) 
-                                            drop-shadow(0 0 5px rgba(255,255,255,0.3))
-                                        `
-                                    }}
+                                    className="object-contain object-left brightness-0 invert"
                                 />
                             </div>
 
                             <p className="text-gray-400 text-[14px] leading-relaxed max-w-md">
                                 Expert immigration guidance built on honesty and transparent results. We don't just process visas; we build futures.
                             </p>
-                            <div className="flex gap-4">
+
+                            {/* Social Icons (Desktop Only here) */}
+                            <div className="hidden lg:flex gap-4 mt-6">
                                 <Facebook className="w-5 h-5 text-gray-400 hover:text-accent-green cursor-pointer transition-colors" />
                                 <Instagram className="w-5 h-5 text-gray-400 hover:text-accent-green cursor-pointer transition-colors" />
                                 <Linkedin className="w-5 h-5 text-gray-400 hover:text-accent-green cursor-pointer transition-colors" />
                             </div>
                         </div>
 
-                        <div className="lg:order-4 pt-4 md:pt-0 ml-2">
+                        {/* Consult Section (Mobile: Order 2) */}
+                        <div className="lg:order-4 order-2 pt-4 md:pt-0 ml-2">
                             <h4 className="font-bold mb-6 text-lg uppercase tracking-wider text-white">Consult</h4>
                             <ul className="space-y-6 text-sm text-gray-400">
                                 <li className="flex items-center gap-3">
@@ -60,6 +56,23 @@ export default function Footer() {
                                     <span className="font-medium text-[12px] sm:text-sm">Melbourne, VIC, Australia</span>
                                 </li>
                             </ul>
+                        </div>
+
+                        {/* Logo & Socials (Mobile: Order 3) */}
+                        <div className="lg:hidden order-3 space-y-8 mt-4">
+                            <div className="relative w-56 h-14">
+                                <Image
+                                    src="/logo.png"
+                                    alt="Forte Migration Logo"
+                                    fill
+                                    className="object-contain object-left brightness-0 invert"
+                                />
+                            </div>
+                            <div className="flex gap-4">
+                                <Facebook className="w-5 h-5 text-gray-400 hover:text-accent-green cursor-pointer transition-colors" />
+                                <Instagram className="w-5 h-5 text-gray-400 hover:text-accent-green cursor-pointer transition-colors" />
+                                <Linkedin className="w-5 h-5 text-gray-400 hover:text-accent-green cursor-pointer transition-colors" />
+                            </div>
                         </div>
                     </div>
 
