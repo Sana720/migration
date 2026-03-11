@@ -1112,7 +1112,7 @@ ${formData.message || 'None provided'}
                                 </div>
                                 <div>
                                     <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Expert Consultant</p>
-                                    <p className="text-sm font-bold text-primary-navy">Keep your questions and doubts noted. Aditi Mohan looks forward to resolving them.</p>
+                                    <p className="text-sm font-bold text-primary-navy">Please check your email for the booking confirmation and the link for the video call.</p>
                                 </div>
                             </div>
 

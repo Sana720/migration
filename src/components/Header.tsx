@@ -84,26 +84,16 @@ export default function Header({ onEnquire, forceSolid = false }: HeaderProps) {
                     <Link
                         href="/"
                         className={`relative transition-all duration-500 block ${effectiveIsScrolled
-                                ? "w-48 lg:w-60 h-12 lg:h-14 -ml-2 lg:ml-1"
-                                : "w-56 lg:w-80 h-14 lg:h-20 -ml-4 lg:-ml-3"
+                            ? "w-48 lg:w-60 h-12 lg:h-14 -ml-2 lg:ml-1"
+                            : "w-56 lg:w-80 h-14 lg:h-20 -ml-4 lg:-ml-3"
                             }`}
                     >
                         <Image
                             src="/logo.png"
                             alt="Forte Migration Logo"
                             fill
-                            className="object-contain object-left transition-all duration-500"
-                            style={{
-                                filter: !effectiveIsScrolled
-                                    ? `
-                                        drop-shadow(0 0 1px white) 
-                                        drop-shadow(0 0 1px white) 
-                                        drop-shadow(0 0 1px white) 
-                                        drop-shadow(0 0 2px white) 
-                                        drop-shadow(0 0 5px rgba(255,255,255,0.3))
-                                      `
-                                    : 'none'
-                            }}
+                            className={`object-contain object-left transition-all duration-500 ${effectiveIsScrolled ? "" : "brightness-0 invert"
+                                }`}
                             priority
                         />
                     </Link>
