@@ -88,7 +88,7 @@ export default function ConsultationFeatured() {
                             <div className="mt-auto w-full">
                                 <div className="text-white/60 text-sm mb-6 group-hover:text-gray-500 transition-colors">Comprehensive document review & full pathway mapping.</div>
                                 <button className="w-full bg-accent-green text-white py-4 rounded-2xl font-black flex items-center justify-center gap-3 group-hover:bg-primary-navy transition-all shadow-xl">
-                                    Secure Slot <ArrowRight className="w-5 h-5" />
+                                    Book Now <ArrowRight className="w-5 h-5" />
                                 </button>
                             </div>
                         </div>

@@ -131,18 +131,7 @@ export default async function ResourceDetailPage({ params }: PageProps) {
                                 <div dangerouslySetInnerHTML={{ __html: blog.content }} />
                             </article>
 
-                            {/* Author Bio Footer */}
-                            <div className="mt-20 p-10 bg-gray-50 rounded-[3rem] border border-gray-100 flex flex-col md:flex-row items-center gap-10">
-                                <div className="w-24 h-24 rounded-3xl bg-primary-navy flex items-center justify-center text-white shrink-0 shadow-lg">
-                                    <User className="w-12 h-12" />
-                                </div>
-                                <div className="text-center md:text-left">
-                                    <h4 className="text-xl font-black text-primary-navy mb-2">About {blog.author_name || 'the Author'}</h4>
-                                    <p className="text-gray-500 font-medium leading-relaxed">
-                                        Forte Migration is dedicated to providing expert advice on Australian immigration. Our team stays on top of all legislative changes to ensure your application has the best chance of success.
-                                    </p>
-                                </div>
-                            </div>
+
                         </div>
                     </div>
                 </section>

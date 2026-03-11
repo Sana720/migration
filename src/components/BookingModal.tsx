@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
-import { X, Calendar as CalendarIcon, Clock, Check, ChevronRight, Phone, Mail, User, MessageSquare, ArrowLeft, RefreshCw } from 'lucide-react';
+import { X, Calendar as CalendarIcon, Clock, Check, ChevronRight, Phone, Mail, User, MessageSquare, ArrowLeft, RefreshCw, AlertCircle, Sparkles, CheckCircle2 } from 'lucide-react';
 import { createClient } from '@/utils/supabase/client';
 
 interface BookingModalProps {
@@ -28,7 +28,8 @@ interface DayOption {
 
 export default function BookingModal({ isOpen, onClose, initialDuration, initialService }: BookingModalProps) {
     const supabase = createClient();
-    const [step, setStep] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
+    const [step, setStep] = useState<1 | 2 | 3 | 4 | 5 | 6 | 7>(1);
+    const [status, setStatus] = useState<{ type: 'error' | 'success' | null, message: string | null }>({ type: null, message: null });
     const [showCancelConfirm, setShowCancelConfirm] = useState(false);
     const [duration, setDuration] = useState<15 | 40 | null>(initialDuration || null);
     const [selectedDayIndex, setSelectedDayIndex] = useState(0);
@@ -268,7 +269,14 @@ export default function BookingModal({ isOpen, onClose, initialDuration, initial
 
     const handleSendOtp = async () => {
         setSendingOtp(true);
+        setStatus({ type: null, message: null });
         try {
+            // Basic email validation regex
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(formData.email)) {
+                throw new Error('Please enter a valid email address.');
+            }
+
             const res = await fetch('/api/auth/send-otp', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -277,7 +285,7 @@ export default function BookingModal({ isOpen, onClose, initialDuration, initial
             if (!res.ok) throw new Error('Failed to send verification code.');
             setStep(4);
         } catch (err: any) {
-            alert(err.message);
+            setStatus({ type: 'error', message: err.message });
         } finally {
             setSendingOtp(false);
         }
@@ -298,6 +306,7 @@ export default function BookingModal({ isOpen, onClose, initialDuration, initial
     const handleVerifyOtp = async (e: React.FormEvent) => {
         e.preventDefault();
         setVerifyingOtp(true);
+        setStatus({ type: null, message: null });
         try {
             const res = await fetch('/api/auth/verify-otp', {
                 method: 'POST',
@@ -309,10 +318,10 @@ export default function BookingModal({ isOpen, onClose, initialDuration, initial
                 setIsEmailVerified(true);
                 setStep(5);
             } else {
-                alert(data.error || 'Invalid code.');
+                setStatus({ type: 'error', message: data.error || 'Invalid code. Please check and try again.' });
             }
         } catch (err: any) {
-            alert('Verification failed: ' + err.message);
+            setStatus({ type: 'error', message: 'Verification failed: ' + err.message });
         } finally {
             setVerifyingOtp(false);
         }
@@ -321,6 +330,7 @@ export default function BookingModal({ isOpen, onClose, initialDuration, initial
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setSubmitting(true);
+        setStatus({ type: null, message: null });
         try {
             const combinedMessage = `
 **Booking Details**
@@ -351,11 +361,10 @@ ${formData.message || 'None provided'}
 
             if (error) throw error;
 
-            alert('Booking request sent successfully! Aditi Mohan will contact you soon.');
-            onClose();
+            setStep(7); // Show success screen instead of immediate close
         } catch (error: any) {
             console.error('Error submitting lead:', error);
-            alert('Error: ' + error.message);
+            setStatus({ type: 'error', message: 'Booking failed: ' + error.message });
         } finally {
             setSubmitting(false);
         }
@@ -377,6 +386,14 @@ ${formData.message || 'None provided'}
             {/* Modal Body */}
             <div className="relative bg-white w-full max-w-2xl max-h-[90vh] overflow-hidden rounded-[2.5rem] shadow-2xl flex flex-col">
 
+                {/* Status Message Helper */}
+                {status.message && (
+                    <div className={`mx-6 mt-6 p-4 rounded-2xl flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-300 ${status.type === 'error' ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-green-50 text-green-600 border border-green-100'}`}>
+                        <AlertCircle className="w-5 h-5 shrink-0" />
+                        <span className="text-sm font-bold uppercase tracking-tight">{status.message}</span>
+                    </div>
+                )}
+
                 {/* Header */}
                 <div className="p-6 md:p-8 flex items-center justify-between border-b border-gray-100">
                     <div className="flex items-center gap-4">
@@ -390,10 +407,10 @@ ${formData.message || 'None provided'}
                         )}
                         <div>
                             <h2 className="text-xl font-bold text-primary-navy">
-                                {step === 1 ? 'Select Service' : step === 2 ? 'Choose Time' : step === 3 ? 'Contact Details' : step === 4 ? 'Verify Email' : step === 5 ? 'Tell me more...' : 'Review & Payment'}
+                                {step === 1 ? 'Select Service' : step === 2 ? 'Choose Time' : step === 3 ? 'Contact Details' : step === 4 ? 'Verify Email' : step === 5 ? 'Tell me more...' : step === 6 ? 'Review & Payment' : 'Booking Confirmed'}
                             </h2>
                             <div className="flex gap-1 mt-1">
-                                {[1, 2, 3, 4, 5, 6].map(i => (
+                                {[1, 2, 3, 4, 5, 6, 7].map(i => (
                                     <div
                                         key={i}
                                         className={`h-1 w-6 rounded-full transition-all ${i <= step ? 'bg-accent-green' : 'bg-gray-100'}`}
@@ -405,7 +422,7 @@ ${formData.message || 'None provided'}
 
                     <button
                         onClick={() => {
-                            if (step <= 2) onClose();
+                            if (step <= 2 || step === 7) onClose();
                             else setShowCancelConfirm(true);
                         }}
                         className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-400 hover:text-primary-navy"
@@ -421,15 +438,15 @@ ${formData.message || 'None provided'}
                             {[
                                 {
                                     min: 15,
-                                    title: 'Book Consultation',
-                                    desc: 'Quick eligibility check and brief visa queries.',
+                                    title: 'Strategy Session',
+                                    desc: ['Quick eligibility check', 'Quick visa queries resolution'],
                                     color: 'border-accent-green',
                                     bg: 'bg-accent-green/5'
                                 },
                                 {
                                     min: 40,
-                                    title: 'Full Consultation',
-                                    desc: 'Comprehensive visa strategy and detailed document review.',
+                                    title: 'Deep Dive Session',
+                                    desc: ['Detailed pathway ', 'Comprehensive visa strategy'],
                                     color: 'border-secondary-blue',
                                     bg: 'bg-secondary-blue/5'
                                 }
@@ -441,7 +458,14 @@ ${formData.message || 'None provided'}
                                 >
                                     <div className="text-3xl font-black text-primary-navy mb-2">{opt.min} MIN</div>
                                     <h3 className="text-lg font-bold text-primary-navy mb-3">{opt.title}</h3>
-                                    <p className="text-sm text-gray-500 leading-relaxed mb-6">{opt.desc}</p>
+                                    <ul className="space-y-2 mb-6">
+                                        {opt.desc.map((item, idx) => (
+                                            <li key={idx} className="flex items-start gap-2 text-sm text-gray-500 leading-relaxed">
+                                                <span className="text-accent-green mt-1">★</span>
+                                                <span>{item}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
                                     <div className="flex items-center text-primary-navy font-bold text-sm">
                                         Select Service <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
                                     </div>
@@ -463,7 +487,9 @@ ${formData.message || 'None provided'}
                                         <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
                                         <span className="text-[10px] font-bold text-green-600 uppercase tracking-widest">Times shown in {userTimezone.replace('_', ' ')}</span>
                                     </div>
-                                    <h3 className="text-lg font-bold text-primary-navy">{duration} Min Professional Session</h3>
+                                    <h3 className="text-lg font-bold text-primary-navy">
+                                        {duration === 15 ? '15 Min Strategy Session' : '40 Min Deep Dive Session'}
+                                    </h3>
                                     <p className="text-sm text-gray-500">Video call or phone consultation with Aditi Mohan.</p>
                                 </div>
                             </div>
@@ -526,7 +552,7 @@ ${formData.message || 'None provided'}
 
                     {/* Step 3: Lead Form */}
                     {step === 3 && (
-                        <form onSubmit={handleNext} className="max-w-2xl mx-auto space-y-8">
+                        <form noValidate onSubmit={handleNext} className="max-w-2xl mx-auto space-y-8">
                             {/* Summary Card */}
                             <div className="flex items-center justify-between p-6 bg-accent-green/5 border border-accent-green/20 rounded-3xl">
                                 <div className="flex items-center gap-4">
@@ -557,7 +583,10 @@ ${formData.message || 'None provided'}
                                             placeholder="John Doe"
                                             className="w-full pl-12 pr-4 py-4 bg-gray-50 border border-transparent focus:bg-white focus:border-accent-green rounded-2xl transition-all outline-none text-sm"
                                             value={formData.name}
-                                            onChange={e => setFormData({ ...formData, name: e.target.value })}
+                                            onChange={e => {
+                                                setFormData({ ...formData, name: e.target.value });
+                                                if (status.type === 'error') setStatus({ type: null, message: null });
+                                            }}
                                         />
                                     </div>
                                 </div>
@@ -571,7 +600,10 @@ ${formData.message || 'None provided'}
                                             placeholder="john@example.com"
                                             className="w-full pl-12 pr-4 py-4 bg-gray-50 border border-transparent focus:bg-white focus:border-accent-green rounded-2xl transition-all outline-none text-sm"
                                             value={formData.email}
-                                            onChange={e => setFormData({ ...formData, email: e.target.value })}
+                                            onChange={e => {
+                                                setFormData({ ...formData, email: e.target.value });
+                                                if (status.type === 'error') setStatus({ type: null, message: null });
+                                            }}
                                         />
                                     </div>
                                 </div>
@@ -650,7 +682,10 @@ ${formData.message || 'None provided'}
                                         placeholder="000000"
                                         className="w-full text-center text-4xl font-black tracking-[0.5em] py-6 bg-gray-50 border-2 border-transparent focus:bg-white focus:border-accent-green rounded-[2rem] transition-all outline-none"
                                         value={otp}
-                                        onChange={e => setOtp(e.target.value.replace(/\D/g, ''))}
+                                        onChange={e => {
+                                            setOtp(e.target.value.replace(/\D/g, ''));
+                                            if (status.type === 'error') setStatus({ type: null, message: null });
+                                        }}
                                     />
                                 </div>
 
@@ -1053,10 +1088,47 @@ ${formData.message || 'None provided'}
                             </p>
                         </div>
                     )}
+
+                    {/* Step 7: Success Screen */}
+                    {step === 7 && (
+                        <div className="max-w-md mx-auto py-12 text-center space-y-8 animate-in zoom-in fade-in duration-500">
+                            <div className="relative mx-auto w-32 h-32">
+                                <div className="absolute inset-0 bg-accent-green rounded-full animate-ping opacity-20" />
+                                <div className="relative w-full h-full bg-white border-8 border-accent-green rounded-full flex items-center justify-center shadow-2xl shadow-accent-green/20">
+                                    <CheckCircle2 className="w-16 h-16 text-accent-green" />
+                                </div>
+                            </div>
+
+                            <div className="space-y-4">
+                                <h3 className="text-3xl font-black text-primary-navy uppercase tracking-tighter">Booking Confirmed!</h3>
+                                <p className="text-gray-500 font-medium leading-relaxed">
+                                    Thank you, <span className="text-primary-navy font-bold">{formData.name}</span>. Your {duration}-min session on <span className="text-primary-navy font-bold">{currentDay.date}</span> at <span className="text-primary-navy font-bold">{formData.local_display_time}</span> has been scheduled successfully.
+                                </p>
+                            </div>
+
+                            <div className="p-6 bg-gray-50 rounded-3xl border border-gray-100 flex items-center gap-4 text-left">
+                                <div className="w-12 h-12 rounded-2xl overflow-hidden shrink-0 border-2 border-white shadow-md">
+                                    <Image src="/Aditi.jpeg" alt="Aditi Mohan" width={48} height={48} className="object-cover" />
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Expert Consultant</p>
+                                    <p className="text-sm font-bold text-primary-navy">Keep your questions and doubts noted. Aditi Mohan looks forward to resolving them.</p>
+                                </div>
+                            </div>
+
+                            <button
+                                onClick={onClose}
+                                className="w-full bg-primary-navy text-white py-5 rounded-3xl font-black text-lg hover:bg-black transition-all shadow-2xl shadow-primary-navy/10 active:scale-95 flex items-center justify-center gap-2"
+                            >
+                                Done
+                                <Check className="w-6 h-6" />
+                            </button>
+                        </div>
+                    )}
                 </div>
 
                 {/* Cancel Booking Footer */}
-                {step >= 3 && (
+                {step >= 3 && step < 7 && (
                     <div className="p-6 border-t border-gray-100 flex justify-center">
                         <button
                             onClick={() => setShowCancelConfirm(true)}
