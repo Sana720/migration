@@ -81,11 +81,11 @@ export default function Footer() {
                         <div className="lg:order-2">
                             <h4 className="font-bold mb-6 text-lg uppercase tracking-wider h-10 lg:h-auto flex items-center">Services</h4>
                             <ul className="space-y-4 text-sm text-gray-400">
-                                <li><button className="hover:text-accent-green transition-colors">Skilled Migration</button></li>
+                                <li><button className="hover:text-accent-green transition-colors">Skilled Migration Visa</button></li>
                                 <li><button className="hover:text-accent-green transition-colors">Partner Visa</button></li>
-                                <li><button className="hover:text-accent-green transition-colors">Employer Sponsored</button></li>
+                                <li><button className="hover:text-accent-green transition-colors">Employer Sponsored Visa</button></li>
                                 <li><button className="hover:text-accent-green transition-colors">Student & Graduate Visa</button></li>
-                                <li><button className="hover:text-accent-green transition-colors">Parent & Child</button></li>
+                                <li><button className="hover:text-accent-green transition-colors">Parent & Child Visa</button></li>
                             </ul>
                         </div>
 
@@ -93,7 +93,7 @@ export default function Footer() {
                             {/* Heading hidden on mobile to keep the list continuous */}
                             <h4 className="font-bold mb-6 text-lg uppercase tracking-wider md:opacity-0 md:pointer-events-none md:block hidden">More</h4>
                             <ul className="space-y-4 text-sm text-gray-400">
-                                <li><button className="hover:text-accent-green transition-colors">Visitor & Holiday</button></li>
+                                <li><button className="hover:text-accent-green transition-colors">Visitor & Holiday Visa</button></li>
                                 <li><button className="hover:text-accent-green transition-colors">PR Return & Citizenship</button></li>
                                 <li><button className="hover:text-accent-green transition-colors">Urgent Lodgment</button></li>
                                 <li><button className="hover:text-accent-green transition-colors">RFI Support</button></li>

@@ -72,10 +72,10 @@ export default function ResourcesListingPage() {
 
                     <div className="max-w-6xl mx-auto text-center relative z-20">
                         <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 backdrop-blur-xl rounded-full text-accent-green font-bold text-[10px] mb-8 border border-white/10 uppercase tracking-[0.3em] shadow-2xl">
-                            Expert Insights • Forte Migration
+                            Forte Migration • Expert Insights
                         </div>
                         <h1 className="text-5xl md:text-7xl font-black mb-6 tracking-tight leading-[1.1]">
-                            Expert <span className="text-accent-green italic">Resources</span>
+                            Immigration <span className="text-accent-green italic">Insights</span>
                         </h1>
                         <p className="text-xl text-white/70 max-w-2xl mx-auto font-medium leading-relaxed">
                             Stay updated with the Australian migration policies, visa updates, and success stories.

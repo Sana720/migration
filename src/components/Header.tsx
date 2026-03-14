@@ -30,6 +30,7 @@ export default function Header({ onEnquire, forceSolid = false }: HeaderProps) {
         const handleScroll = () => {
             setIsScrolled(window.scrollY > 50);
         };
+        handleScroll();
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
