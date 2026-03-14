@@ -361,6 +361,27 @@ ${formData.message || 'None provided'}
 
             if (error) throw error;
 
+            // Trigger Confirmation Email (Fire and forget or wait depends on UX, let's wait to ensure it's logged)
+            try {
+                await fetch('/api/send-confirmation', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: formData.name,
+                        email: formData.email,
+                        phone: formData.phone,
+                        message: combinedMessage,
+                        type: `${duration}-min`,
+                        appointment_date: currentDay.dateIso,
+                        appointment_time: formData.appointment_time,
+                        local_display_time: formData.local_display_time
+                    })
+                });
+            } catch (emailErr) {
+                console.error('Failed to trigger confirmation email:', emailErr);
+                // We don't block the success screen for email failure, as the DB record is already saved
+            }
+
             setStep(7); // Show success screen instead of immediate close
         } catch (error: any) {
             console.error('Error submitting lead:', error);

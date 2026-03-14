@@ -113,7 +113,7 @@ export default function Header({ onEnquire, forceSolid = false }: HeaderProps) {
                                     <Link
                                         key={item.id}
                                         href={item.href}
-                                        className={`font-bold text-sm hover:text-accent-green transition-colors uppercase tracking-widest relative group ${isActive ? 'text-accent-green' : ''}`}
+                                        className={`font-bold text-base hover:text-accent-green transition-colors uppercase tracking-widest relative group ${isActive ? 'text-accent-green' : ''}`}
                                     >
                                         {item.label}
                                         <span className={`absolute -bottom-2 left-0 h-0.5 bg-accent-green transition-all ${isActive ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
@@ -124,7 +124,7 @@ export default function Header({ onEnquire, forceSolid = false }: HeaderProps) {
                         <div className="h-4 w-[1px] bg-gray-300/30"></div>
                         <Link
                             href="/consult"
-                            className={`px-8 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all duration-300 transform hover:-translate-y-1 block ${effectiveIsScrolled
+                            className={`px-8 py-3 rounded-2xl font-black text-sm uppercase tracking-widest transition-all duration-300 transform hover:-translate-y-1 block ${effectiveIsScrolled
                                 ? "bg-primary-navy text-white hover:bg-accent-green shadow-xl shadow-primary-navy/20"
                                 : "bg-white text-primary-navy hover:bg-accent-green hover:text-white shadow-xl shadow-black/10"
                                 }`}

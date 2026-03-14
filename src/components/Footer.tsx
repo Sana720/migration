@@ -31,8 +31,8 @@ export default function Footer() {
                                 />
                             </div>
 
-                            <p className="text-gray-400 text-[14px] leading-relaxed max-w-md">
-                                Expert immigration guidance built on honesty and transparent results. We don't just process visas; we build futures.
+                            <p className="text-gray-400 text-[14px] leading-relaxed max-w-md text-justify">
+                                Trusted immigration guidance built on honesty and transparency. We don't just process visas, we secure your future.
                             </p>
 
                             {/* Social Icons (Desktop Only here) */}
