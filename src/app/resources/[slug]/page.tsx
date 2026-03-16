@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import PageLayout from '@/components/PageLayout';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Calendar, User, ArrowLeft, Clock } from 'lucide-react';
+import { Calendar, User, ArrowLeft, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
 import ShareButtons from '@/components/ShareButtons';
 
 interface Blog {
@@ -49,6 +49,29 @@ export default async function ResourceDetailPage({ params }: PageProps) {
         notFound();
     }
 
+    // Fetch Previous Blog
+    const { data: prevData } = await supabase
+        .from('blogs')
+        .select('title, slug')
+        .eq('is_published', true)
+        .lt('created_at', blog.created_at)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+    // Fetch Next Blog
+    const { data: nextData } = await supabase
+        .from('blogs')
+        .select('title, slug')
+        .eq('is_published', true)
+        .gt('created_at', blog.created_at)
+        .order('created_at', { ascending: true })
+        .limit(1)
+        .maybeSingle();
+
+    const prevBlog = prevData as { title: string; slug: string } | null;
+    const nextBlog = nextData as { title: string; slug: string } | null;
+
     return (
         <PageLayout>
             <div className="bg-white min-h-screen">
@@ -66,14 +89,6 @@ export default async function ResourceDetailPage({ params }: PageProps) {
                     </div>
 
                     <div className="max-w-4xl mx-auto relative z-10">
-                        <Link
-                            href="/resources"
-                            className="inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors text-xs font-black uppercase tracking-widest mb-10 group"
-                        >
-                            <ArrowLeft className="w-4 h-4 text-accent-green group-hover:-translate-x-1 transition-transform" />
-                            Back to Resources
-                        </Link>
-
                         <h1 className="text-4xl md:text-6xl font-black mb-8 leading-tight tracking-tight">
                             {blog.title}
                         </h1>
@@ -132,7 +147,39 @@ export default async function ResourceDetailPage({ params }: PageProps) {
                                 <div dangerouslySetInnerHTML={{ __html: cleanAIContent(blog.content) }} />
                             </article>
 
-
+                            {/* Post Navigation */}
+                            <div className="mt-20 pt-10 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-8">
+                                <div className="w-full sm:w-1/2">
+                                    {prevBlog && (
+                                        <Link
+                                            href={`/resources/${prevBlog.slug}`}
+                                            className="group flex flex-col gap-3 p-6 rounded-[2rem] bg-gray-50 hover:bg-white border border-transparent hover:border-gray-100 transition-all hover:shadow-xl"
+                                        >
+                                            <span className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-accent-green">
+                                                <ChevronLeft className="w-4 h-4" /> Previous Post
+                                            </span>
+                                            <span className="text-primary-navy font-bold line-clamp-1 group-hover:text-accent-green transition-colors">
+                                                {prevBlog.title}
+                                            </span>
+                                        </Link>
+                                    )}
+                                </div>
+                                <div className="w-full sm:w-1/2 text-right">
+                                    {nextBlog && (
+                                        <Link
+                                            href={`/resources/${nextBlog.slug}`}
+                                            className="group flex flex-col gap-3 p-6 rounded-[2rem] bg-gray-50 hover:bg-white border border-transparent hover:border-gray-100 transition-all hover:shadow-xl items-end"
+                                        >
+                                            <span className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-accent-green">
+                                                Next Post <ChevronRight className="w-4 h-4" />
+                                            </span>
+                                            <span className="text-primary-navy font-bold line-clamp-1 group-hover:text-accent-green transition-colors">
+                                                {nextBlog.title}
+                                            </span>
+                                        </Link>
+                                    )}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>

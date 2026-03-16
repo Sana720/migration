@@ -3,6 +3,7 @@
 import ServiceNavigator from "@/components/ServiceNavigator";
 import PageLayout, { useBooking } from "@/components/PageLayout";
 import ConsultationFeatured from "@/components/ConsultationFeatured";
+import MigrationTimeline from "@/components/MigrationTimeline";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -114,6 +115,8 @@ function HomeContent() {
       </section>
 
       <ConsultationFeatured />
+
+      <MigrationTimeline />
 
       {/* Stats Section Hidden - Focused on Quality */}
       <div className="hidden">
@@ -296,6 +299,7 @@ function HomeContent() {
           </div>
         </div>
       </section>
+
       {/* Consultation Pricing Section - Restored before footer */}
       <section className="py-20 bg-bg-cream/30">
         <div className="container mx-auto px-4 md:px-8 text-center">

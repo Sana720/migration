@@ -6,6 +6,7 @@ import PageLayout from '@/components/PageLayout';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Calendar, User, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 interface Blog {
     id: string;
@@ -29,11 +30,32 @@ const cleanAIContent = (text: string) => {
         .replace(/【\d+†source】/g, '');
 };
 
+const stripHtml = (html: string) => {
+    if (!html) return '';
+    return html.replace(/<[^>]*>?/gm, '');
+};
+
 export default function ResourcesListingPage() {
     const supabase = createClient();
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const urlPage = parseInt(searchParams.get('page') || '1');
+
     const [blogs, setBlogs] = useState<Blog[]>([]);
     const [loading, setLoading] = useState(true);
-    const [page, setPage] = useState(1);
+    const [page, setPage] = useState(urlPage);
+
+    useEffect(() => {
+        setPage(urlPage);
+    }, [urlPage]);
+
+    const handlePageChange = (newPage: number) => {
+        setPage(newPage);
+        const params = new URLSearchParams(searchParams.toString());
+        params.set('page', newPage.toString());
+        router.push(`/resources?${params.toString()}`, { scroll: false });
+        // Keeping window scroll top separately or through next/navigation
+    };
 
     useEffect(() => {
         async function fetchBlogs() {
@@ -148,7 +170,7 @@ export default function ResourcesListingPage() {
                                                 </h3>
 
                                                 <p className="text-gray-500 text-sm leading-relaxed mb-6 flex-1 line-clamp-3">
-                                                    {cleanAIContent(blog.excerpt) || 'Read our latest update on Australian migration policies and how they might affect your visa application.'}
+                                                    {stripHtml(cleanAIContent(blog.excerpt)) || 'Read our latest update on Australian migration policies and how they might affect your visa application.'}
                                                 </p>
 
                                                 <div className="flex items-center gap-2 text-primary-navy font-black text-xs uppercase tracking-widest group-hover:gap-4 transition-all">
@@ -163,7 +185,7 @@ export default function ResourcesListingPage() {
                                 {totalPages > 1 && (
                                     <div className="flex items-center justify-center gap-3 mt-16">
                                         <button
-                                            onClick={() => { setPage(p => Math.max(1, p - 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                                            onClick={() => { handlePageChange(Math.max(1, page - 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
                                             disabled={page === 1}
                                             className="w-12 h-12 flex items-center justify-center rounded-2xl border-2 border-gray-200 text-gray-400 hover:border-primary-navy hover:text-primary-navy disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                                         >
@@ -173,7 +195,7 @@ export default function ResourcesListingPage() {
                                         {[...Array(totalPages)].map((_, i) => (
                                             <button
                                                 key={i}
-                                                onClick={() => { setPage(i + 1); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                                                onClick={() => { handlePageChange(i + 1); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
                                                 className={`w-12 h-12 rounded-2xl font-black text-sm transition-all ${page === i + 1
                                                     ? 'bg-primary-navy text-white shadow-lg'
                                                     : 'border-2 border-gray-200 text-gray-500 hover:border-primary-navy hover:text-primary-navy'
@@ -184,7 +206,7 @@ export default function ResourcesListingPage() {
                                         ))}
 
                                         <button
-                                            onClick={() => { setPage(p => Math.min(totalPages, p + 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                                            onClick={() => { handlePageChange(Math.min(totalPages, page + 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
                                             disabled={page === totalPages}
                                             className="w-12 h-12 flex items-center justify-center rounded-2xl border-2 border-gray-200 text-gray-400 hover:border-primary-navy hover:text-primary-navy disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                                         >

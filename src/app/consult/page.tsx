@@ -1,5 +1,6 @@
 import PageLayout from "@/components/PageLayout";
 import ConsultationHub from "@/components/ConsultationHub";
+import ConsultFAQs from "@/components/ConsultFAQs";
 
 export const metadata = {
     title: "Book a Consultation | Forte Migration",
@@ -12,6 +13,7 @@ export default function ConsultPage() {
             <div className="pt-32 lg:pt-40 min-h-[70vh]">
                 <div className="w-full">
                     <ConsultationHub />
+                    <ConsultFAQs />
                 </div>
             </div>
         </PageLayout>
