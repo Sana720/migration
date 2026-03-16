@@ -21,6 +21,14 @@ interface Blog {
 
 const ITEMS_PER_PAGE = 6;
 
+const cleanAIContent = (text: string) => {
+    if (!text) return '';
+    return text
+        .replace(/:contentReference\[oaicite:\d+\]\{index=\d+\}/g, '')
+        .replace(/\[oaicite:\d+\]/g, '')
+        .replace(/【\d+†source】/g, '');
+};
+
 export default function ResourcesListingPage() {
     const supabase = createClient();
     const [blogs, setBlogs] = useState<Blog[]>([]);
@@ -140,7 +148,7 @@ export default function ResourcesListingPage() {
                                                 </h3>
 
                                                 <p className="text-gray-500 text-sm leading-relaxed mb-6 flex-1 line-clamp-3">
-                                                    {blog.excerpt || 'Read our latest update on Australian migration policies and how they might affect your visa application.'}
+                                                    {cleanAIContent(blog.excerpt) || 'Read our latest update on Australian migration policies and how they might affect your visa application.'}
                                                 </p>
 
                                                 <div className="flex items-center gap-2 text-primary-navy font-black text-xs uppercase tracking-widest group-hover:gap-4 transition-all">

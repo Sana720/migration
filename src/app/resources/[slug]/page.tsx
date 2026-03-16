@@ -23,6 +23,14 @@ interface PageProps {
     }>;
 }
 
+const cleanAIContent = (text: string) => {
+    if (!text) return '';
+    return text
+        .replace(/:contentReference\[oaicite:\d+\]\{index=\d+\}/g, '')
+        .replace(/\[oaicite:\d+\]/g, '')
+        .replace(/【\d+†source】/g, '');
+};
+
 export default async function ResourceDetailPage({ params }: PageProps) {
     const { slug } = await params;
     const supabase = await createClient();
@@ -128,7 +136,7 @@ export default async function ResourceDetailPage({ params }: PageProps) {
                             </div>
 
                             <article className="prose prose-xl prose-slate max-w-none prose-headings:text-primary-navy prose-headings:font-black prose-p:text-gray-600 prose-p:leading-relaxed prose-strong:text-primary-navy prose-a:text-accent-green hover:prose-a:text-primary-navy transition-all">
-                                <div dangerouslySetInnerHTML={{ __html: blog.content }} />
+                                <div dangerouslySetInnerHTML={{ __html: cleanAIContent(blog.content) }} />
                             </article>
 
 
