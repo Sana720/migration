@@ -3,7 +3,8 @@ import { notFound } from 'next/navigation';
 import PageLayout from '@/components/PageLayout';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Calendar, User, ArrowLeft, Clock, Share2 } from 'lucide-react';
+import { Calendar, User, ArrowLeft, Clock } from 'lucide-react';
+import ShareButtons from '@/components/ShareButtons';
 
 interface Blog {
     id: string;
@@ -114,15 +115,7 @@ export default async function ResourceDetailPage({ params }: PageProps) {
                 {/* Article Content */}
                 <section className="py-20 px-4">
                     <div className="max-w-4xl mx-auto flex flex-col md:flex-row gap-12">
-                        {/* Sidebar Share */}
-                        <div className="md:w-20 shrink-0 flex flex-row md:flex-col items-center gap-4 justify-center md:justify-start">
-                            <span className="hidden md:block text-[10px] font-black uppercase tracking-[0.2em] text-gray-300 whitespace-nowrap rotate-90 mb-12 w-fit origin-center">Share this</span>
-                            {[1, 2, 3].map((i) => (
-                                <button key={i} className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-primary-navy hover:text-white transition-all hover:shadow-xl">
-                                    <Share2 className="w-5 h-5" />
-                                </button>
-                            ))}
-                        </div>
+                        <ShareButtons title={blog.title} />
 
                         {/* Main Body */}
                         <div className="flex-1">
