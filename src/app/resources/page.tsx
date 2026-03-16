@@ -106,14 +106,14 @@ export default function ResourcesListingPage() {
                                             className="group flex flex-col bg-white rounded-[2.5rem] overflow-hidden border border-gray-100 transition-all hover:shadow-2xl hover:-translate-y-2"
                                         >
                                             {/* Thumbnail */}
-                                            <div className="relative h-64 overflow-hidden bg-gray-50">
+                                            <div className="relative aspect-video overflow-hidden bg-gray-50">
                                                 <Image
                                                     src={blog.thumbnail_url || 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&q=80&w=800'}
                                                     alt={blog.title}
                                                     fill
-                                                    className="object-contain transition-transform duration-500 group-hover:scale-105"
+                                                    className="object-cover object-left transition-transform duration-500 group-hover:scale-105"
                                                 />
-                                                <div className="absolute top-6 left-6">
+                                                <div className="absolute top-6 right-6">
                                                     <span className="bg-white/90 backdrop-blur-md px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest text-primary-navy">
                                                         Insights
                                                     </span>

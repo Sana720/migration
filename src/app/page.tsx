@@ -84,19 +84,21 @@ function HomeContent() {
               </div> */}
             </div>
             <div className="lg:w-[60%]">
-              <div className="text-accent-green font-black text-xs uppercase tracking-[0.4em] mb-6">The Founder</div>
+              <div className="text-accent-green font-black text-xs uppercase tracking-[0.4em] mb-6">PRINCIPAL MIGRATION AGENT</div>
               <h2 className="text-3xl md:text-4xl text-primary-navy font-black leading-tight mb-8">
-                Aditi Mohan <span className="text-gray-300 text-2xl font-medium block mt-1">(MARN 2619201)</span>
+                Aditi Mohan <span className="text-gray-300 text-lg font-medium block mt-1">
+                  (MARN 2619201)
+                </span>
               </h2>
               <div className="space-y-6 text-lg text-gray-500 font-medium leading-relaxed">
                 <p>
-                  With specialized expertise in Australian migration law, Aditi Mohan has successfully guided families and professionals through one of the world's most complex immigration systems.
+                  Provides a blend of strategic consulting precision and a genuine, caring nature to support her clients' journeys. Her background in high-level problem solving allows her to navigate the complex Australian legislative framework with a solution-driven mindset, ensuring every client pathway is both efficient and robust.
+                </p>
+                <p>
+                  Aditi is the right choice for those seeking a trustworthy advocate because she balances technical mastery with deep empathy. She doesn’t just manage files; she manages futures. With Aditi, you can expect clear and progressive communication, ensuring that you feel empowered, informed, and confident through every step of your migration journey.
                 </p>
                 <p className="border-l-4 border-accent-green pl-8 py-2 italic text-primary-navy font-bold text-xl">
                   "I don't believe in just processing papers. I believe in securing your legacy in Australia with honesty and precision."
-                </p>
-                <p>
-                  As a Registered Migration Agent, Aditi  focuses on high-complexity cases, appeals, and strategic long-term residency planning.
                 </p>
               </div>
               <div className="mt-12 flex flex-wrap gap-4">
@@ -125,12 +127,12 @@ function HomeContent() {
         <div className="container mx-auto px-4 md:px-8 relative z-10">
           <div className="flex flex-col lg:flex-row items-center justify-between mb-24 gap-16">
             <div className="lg:w-1/2 text-center lg:text-left">
-              <div className="text-accent-green font-black text-xs uppercase tracking-[0.4em] mb-4">Visa Categories</div>
+              {/* <div className="text-accent-green font-black text-xs uppercase tracking-[0.4em] mb-4">Visa Categories</div> */}
               <h2 className="text-3xl md:text-5xl text-primary-navy font-black leading-tight mb-8">
-                Comprehensive Solutions for <br /> Every Migration Goal.
+                Migration Services
               </h2>
               <p className="text-lg text-gray-600 max-w-md mx-auto lg:mx-0 font-medium leading-relaxed">
-                We specialise in complex cases, refusals, and long-term residency strategies for Australia. Our experts guide you through every step of the legal process.
+                We are an innovative Australian immigration company that delivers a suite of immigration services and will support you through every step of the process.
               </p>
             </div>
             <div className="lg:w-1/2 relative">
@@ -277,7 +279,7 @@ function HomeContent() {
                   key={i}
                   onClick={() => openBooking(null, visa.title)}
                   className="group bg-white p-10 rounded-[3rem] border border-primary-navy/5 hover:border-accent-green hover:shadow-2xl transition-all duration-500 flex flex-col h-full relative overflow-hidden shadow-sm text-left w-full cursor-pointer">
-                  <div className="absolute top-[-5%] right-[-5%] text-7xl opacity-[0.03] group-hover:opacity-[0.07] transition-all rotate-12">{visa.icon}</div>
+                  <div className="absolute top-[-5%] right-[-5%] text-7xl text-accent-green opacity-[0.08] group-hover:opacity-[0.15] transition-all rotate-12">{visa.icon}</div>
                   <div className="text-accent-green font-black text-xs mb-4 flex items-center gap-2">
                     <span className="w-8 h-[2px] bg-accent-green"></span>
                     {visa.code}

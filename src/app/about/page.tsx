@@ -40,13 +40,13 @@ export default function AboutPage() {
                     <div className="max-w-4xl mx-auto relative z-20 text-center">
                         <div className="flex flex-col items-center">
                             <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 backdrop-blur-xl rounded-full text-accent-green font-bold text-[10px] mb-8 border border-white/10 uppercase tracking-[0.3em] shadow-2xl">
-                                Authorised Experts • Registered Migration Agents
+                                FORTE MIGRATION • Trusted and Registered Migration Agents
                             </div>
                             <h1 className="text-5xl md:text-7xl font-black mb-8 leading-[1.1] tracking-tight">
                                 About <span className="text-accent-green italic">Us</span>
                             </h1>
                             <p className="text-xl text-white/70 font-medium leading-relaxed mb-8 max-w-2xl mx-auto">
-                                Guiding your Australian journey with specialized expertise and a commitment to transparent results.
+                                Immigration consultants for your Australian journey with a foundation of integrity and proficiency in Australian migration law.
                             </p>
                             <div className="flex items-center gap-4 text-sm font-black uppercase tracking-widest text-accent-green">
                                 <span className="w-12 h-[2px] bg-accent-green"></span>
@@ -86,11 +86,12 @@ export default function AboutPage() {
                                     </div>
                                     <div className="space-y-6 text-lg text-gray-500 font-medium leading-relaxed">
                                         <p>
-                                            With specialized expertise in Australian migration law, Aditi Mohan has successfully guided families and professionals through one of the world's most complex immigration systems.
+                                            Provides a blend of strategic consulting precision and a genuine, caring nature to support her clients' journeys. Her background in high-level problem solving allows her to navigate the complex Australian legislative framework with a solution-driven mindset, ensuring every client pathway is both efficient and robust.
+                                        </p>
+                                        <p>  Aditi is the right choice for those seeking a trustworthy advocate because she balances technical mastery with deep empathy. She doesn’t just manage files; she manages futures. With Aditi, you can expect clear and progressive communication, ensuring that you feel empowered, informed, and confident through every step of your migration journey.
                                         </p>
                                         <p className="border-l-4 border-accent-green pl-8 py-2 italic text-primary-navy font-bold text-xl">
-                                            "I don't believe in just processing papers. I believe in securing your legacy in Australia with honesty and precision."
-                                        </p>
+                                            "I don't believe in just processing papers. I believe in securing your legacy in Australia with honesty and precision."</p>
                                     </div>
                                     <div className="mt-8 flex flex-wrap gap-3">
                                         {['Analytical Approach', 'Strategic Planning', 'Client-Centric'].map(tag => (
@@ -110,11 +111,10 @@ export default function AboutPage() {
                     <div className="max-w-4xl mx-auto">
                         <div className="space-y-12 text-xl text-gray-500 font-medium leading-relaxed">
                             <p>
-                                Our team focuses on high-complexity cases, appeals, and strategic long-term residency planning. Our approach combines deep professional knowledge with a personal understanding of the migration journey.
-                            </p>
+                                At Forte Migration, we provide a rock-solid foundation for your future through a team that is widely trusted, consistently reliable, and uncompromisingly honest. We pride ourselves on handling all scenarios within the immigration remit.        </p>
 
                             <p>
-                                As authorised Registered Migration Agents, we operate with the highest standards of integrity and transparency, ensuring every client has a clear pathway to success in Australia.
+                                Our approach ensures you receive a clear, realistic, and expert assessment of your options, so you can navigate the Australian migration system with total certainty and peace of mind.
                             </p>
                         </div>
                     </div>

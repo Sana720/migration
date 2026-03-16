@@ -8,6 +8,7 @@ html {
 :root {
   --primary-navy: #00205B;
   --accent-green: #20B2AA;
+  --accent-green-light: #E6F4F3;
   --secondary-blue: #2D5A82;
   --bg-cream: #FDFBF7;
   --text-dark: #1E293B;
@@ -17,6 +18,7 @@ html {
   --font-montserrat: 'Montserrat', sans-serif;
   --color-primary-navy: #00205B;
   --color-accent-green: #20B2AA;
+  --color-accent-green-light: #E6F4F3;
   --color-secondary-blue: #2D5A82;
   --color-bg-cream: #FDFBF7;
   --color-text-dark: #1E293B;
