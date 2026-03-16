@@ -43,7 +43,7 @@ export default function ConsultationHub() {
                         <ul className="text-left space-y-4 mb-10 text-gray-600 flex-grow">
                             <li className="flex items-center gap-3 text-primary-navy">
                                 <span className="text-primary-navy group-hover:text-accent-green transition-colors">★</span>
-                                Detailed Path way
+                                Detailed Pathway
                             </li>
                             <li className="flex items-center gap-3 text-primary-navy">
                                 <span className="text-primary-navy group-hover:text-accent-green transition-colors">★</span>
