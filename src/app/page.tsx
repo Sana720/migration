@@ -5,7 +5,9 @@ import PageLayout, { useBooking } from "@/components/PageLayout";
 import ConsultationFeatured from "@/components/ConsultationFeatured";
 import MigrationTimeline from "@/components/MigrationTimeline";
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
+import { ArrowRight } from "lucide-react";
 
 function HomeContent() {
   const { openBooking } = useBooking();
@@ -160,6 +162,7 @@ function HomeContent() {
                 title: "Skilled Migration",
                 code: "Subclass 189/190/491",
                 desc: "For professionals seeking permanent residency based on their points-tested skilled occupation.",
+                resourceSlug: "skills-assessment-for-australian-migration-why-it-matters-for-skilled-visa-applicants",
                 icon: (
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-full h-full">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
@@ -170,6 +173,7 @@ function HomeContent() {
                 title: "Partner & Relationship",
                 code: "Subclass 820/801, 309/100",
                 desc: "Advice for de facto or married partners of Australians, including the 300 Prospective Marriage visa.",
+                resourceSlug: "partner-visa-australia-requirements-eligibility-documents-evidence",
                 icon: (
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-full h-full">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
@@ -180,26 +184,18 @@ function HomeContent() {
                 title: "Employer Sponsored",
                 code: "Subclass 482, 186, 494",
                 desc: "Work visas for skilled workers under Australian business sponsorship and nomination pathways.",
+                resourceSlug: "employer-sponsorship-in-australia-a-step-by-step-guide-for-skilled-workers",
                 icon: (
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-full h-full">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Z" />
                   </svg>
                 )
               },
-              // {
-              //   title: "Business & Investment",
-              //   code: "Subclass 188/888",
-              //   desc: "For high-net-worth individuals and business owners looking to invest in Australia's economy.",
-              //   icon: (
-              //     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-full h-full">
-              //       <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l.43.43a.75.75 0 001.06 0l4.5-4.5.43.43a.75.75 0 001.06 0L21.75 3m-3.75 0h3.75v3.75m-3.75-3.75l3.75 3.75" />
-              //     </svg>
-              //   )
-              // },
               {
                 title: "Student & Graduate",
                 code: "Subclass 500/485",
                 desc: "Guidance on study pathways and postgraduate work visas for international students and graduates.",
+                resourceSlug: "485-visa-australia-2026-requirements-updates-and-application-guide",
                 icon: (
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-full h-full">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.438 60.438 0 00-.491 6.347A48.62 48.62 0 0112 20.904a48.62 48.62 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.636 50.636 0 00-2.658-.813A59.906 59.906 0 0112 3.493a59.903 59.903 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5Zm0 0v-3.675A56.756 56.756 0 0112 8.25c2.474 0 4.862.158 7.203.465V15m-14.453 0H6.75m10.5 0h1.703" />
@@ -210,6 +206,7 @@ function HomeContent() {
                 title: "Parent & Child",
                 code: "Subclass 143/804/101",
                 desc: "Reuniting families with tailored strategies for parent, child, and biological relative visas.",
+                resourceSlug: "bring-your-family-closer-parent-child-visas-made-simple",
                 icon: (
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-full h-full">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
@@ -220,6 +217,7 @@ function HomeContent() {
                 title: "Visitor & Holiday",
                 code: "Subclass 600/417/462",
                 desc: "Short-stay options for tourism, family visits, business travel, or working holiday makers.",
+                resourceSlug: "thinking-about-working-while-visiting-australia-what-visitor-visa-holders-must-know",
                 icon: (
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-full h-full">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
@@ -248,8 +246,9 @@ function HomeContent() {
               },
               {
                 title: "RFI & Section 56/57",
-                code: "Immigration Responses",
-                desc: "Expert support for Requests for Further Information (RFI) and Natural Justice letter responses.",
+                code: "RFI Support",
+                desc: "Professional guidance for responding to Department requests (RFI) and Section 56/57 notices.",
+                resourceSlug: "request-for-information-rfi-assistance-get-it-right-the-first-time",
                 icon: (
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-full h-full">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 8.25h9m-9 3h9m-9 3h9m-6.75-12.75h3.75a2.25 2.25 0 012.25 2.25v13.5a2.25 2.25 0 01-2.25 2.25h-3.75a2.25 2.25 0 01-2.25-2.25V5.25a2.25 2.25 0 012.25-2.25z" />
@@ -260,6 +259,7 @@ function HomeContent() {
                 title: "Refusal & Cancellation",
                 code: "Status Protection",
                 desc: "Strategic guidance for visa refusals and cancellations to protect your status in Australia.",
+                resourceSlug: "section-48-visa-restriction-in-australia-what-it-means-after-a-visa-refusal",
                 icon: (
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-full h-full">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0Zm-9 3.75h.008v.008H12v-.008Z" />
@@ -278,23 +278,46 @@ function HomeContent() {
               }
             ]
               .map((visa, i) => (
-                <button
+                <div
                   key={i}
-                  onClick={() => openBooking(null, visa.title)}
-                  className="group bg-white p-10 rounded-[3rem] border border-primary-navy/5 hover:border-accent-green hover:shadow-2xl transition-all duration-500 flex flex-col h-full relative overflow-hidden shadow-sm text-left w-full cursor-pointer">
+                  className="group bg-white p-10 rounded-[3rem] border border-primary-navy/5 hover:border-accent-green hover:shadow-2xl transition-all duration-500 flex flex-col h-full relative overflow-hidden shadow-sm text-left w-full cursor-default"
+                >
+                  {/* Whole Card Link to Resource */}
+                  {visa.resourceSlug && (
+                    <Link
+                      href={`/resources/${visa.resourceSlug}`}
+                      className="absolute inset-0 z-10 cursor-pointer"
+                      aria-label={`Read guide for ${visa.title}`}
+                    />
+                  )}
+
                   <div className="absolute top-[-5%] right-[-5%] text-7xl text-accent-green opacity-[0.08] group-hover:opacity-[0.15] transition-all rotate-12">{visa.icon}</div>
-                  <div className="text-accent-green font-black text-xs mb-4 flex items-center gap-2">
-                    <span className="w-8 h-[2px] bg-accent-green"></span>
-                    {visa.code}
+                  
+                  <div className="relative z-0">
+                    <div className="text-accent-green font-black text-xs mb-4 flex items-center gap-2">
+                      <span className="w-8 h-[2px] bg-accent-green"></span>
+                      {visa.code}
+                    </div>
+                    <h3 className="text-2xl font-black text-primary-navy mb-4 group-hover:text-accent-green transition-colors">
+                      {visa.title}
+                    </h3>
+                    <p className="text-gray-500 mb-10 text-sm font-medium leading-[1.6]">
+                      {visa.desc}
+                    </p>
                   </div>
-                  <h3 className="text-2xl font-black text-primary-navy mb-4 group-hover:text-accent-green transition-colors">{visa.title}</h3>
-                  <p className="text-gray-500 mb-10 text-sm font-medium leading-[1.6]">{visa.desc}</p>
-                  <div className="mt-auto">
-                    <span className="text-xs font-black uppercase tracking-[0.2em] text-primary-navy flex items-center gap-3 group-hover:gap-5 transition-all">
-                      Discover Eligibility <span className="text-accent-green text-lg">→</span>
-                    </span>
+
+                  <div className="mt-auto relative z-20">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openBooking(null, visa.title);
+                      }}
+                      className="w-full sm:w-auto px-6 py-3 rounded-xl text-xs font-black uppercase tracking-[0.2em] text-primary-navy border-2 border-primary-navy/10 flex items-center justify-center gap-3 transition-all duration-300 bg-white group-hover:bg-accent-green group-hover:text-white group-hover:border-accent-green group-hover:shadow-lg group-hover:shadow-green-100"
+                    >
+                      Discover Eligibility <span className="text-lg">→</span>
+                    </button>
                   </div>
-                </button>
+                </div>
               ))}
           </div>
         </div>

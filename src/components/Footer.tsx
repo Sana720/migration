@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import { Mail, Phone, MapPin, Facebook, Instagram, Linkedin } from 'lucide-react';
 
 export default function Footer() {
@@ -81,11 +82,11 @@ export default function Footer() {
                         <div className="lg:order-2">
                             <h4 className="font-bold mb-6 text-lg uppercase tracking-wider h-10 lg:h-auto flex items-center">Services</h4>
                             <ul className="space-y-4 text-sm text-gray-400">
-                                <li><button className="hover:text-accent-green transition-colors">Skilled Migration Visa</button></li>
-                                <li><button className="hover:text-accent-green transition-colors">Partner Visa</button></li>
-                                <li><button className="hover:text-accent-green transition-colors">Employer Sponsored Visa</button></li>
-                                <li><button className="hover:text-accent-green transition-colors">Student & Graduate Visa</button></li>
-                                <li><button className="hover:text-accent-green transition-colors">Parent & Child Visa</button></li>
+                                <li><Link href="/resources/skills-assessment-for-australian-migration-why-it-matters-for-skilled-visa-applicants" className="hover:text-accent-green transition-colors">Skilled Migration Visa</Link></li>
+                                <li><Link href="/resources/partner-visa-australia-requirements-eligibility-documents-evidence" className="hover:text-accent-green transition-colors">Partner Visa</Link></li>
+                                <li><Link href="/resources/employer-sponsorship-in-australia-a-step-by-step-guide-for-skilled-workers" className="hover:text-accent-green transition-colors">Employer Sponsored Visa</Link></li>
+                                <li><Link href="/resources/485-visa-australia-2026-requirements-updates-and-application-guide" className="hover:text-accent-green transition-colors">Student & Graduate Visa</Link></li>
+                                <li><Link href="/resources/bring-your-family-closer-parent-child-visas-made-simple" className="hover:text-accent-green transition-colors">Parent & Child Visa</Link></li>
                             </ul>
                         </div>
 
@@ -93,12 +94,12 @@ export default function Footer() {
                             {/* Heading hidden on mobile to keep the list continuous */}
                             <h4 className="font-bold mb-6 text-lg uppercase tracking-wider md:opacity-0 md:pointer-events-none md:block hidden">More</h4>
                             <ul className="space-y-4 text-sm text-gray-400">
-                                <li><button className="hover:text-accent-green transition-colors">Visitor & Holiday Visa</button></li>
-                                <li><button className="hover:text-accent-green transition-colors">PR Return & Citizenship</button></li>
-                                <li><button className="hover:text-accent-green transition-colors">Urgent Lodgment</button></li>
-                                <li><button className="hover:text-accent-green transition-colors">RFI Support</button></li>
-                                <li><button className="hover:text-accent-green transition-colors">Refusal & Cancellation</button></li>
-                                <li><button className="hover:text-accent-green transition-colors">Ministerial Intervention</button></li>
+                                <li><Link href="/resources/thinking-about-working-while-visiting-australia-what-visitor-visa-holders-must-know" className="hover:text-accent-green transition-colors">Visitor & Holiday Visa</Link></li>
+                                <li><Link href="/resources/pr-return-citizenship-in-australia" className="hover:text-accent-green transition-colors">PR Return & Citizenship</Link></li>
+                                <li><Link href="/resources/urgent-lodgment-for-australian-visas" className="hover:text-accent-green transition-colors">Urgent Lodgment</Link></li>
+                                <li><Link href="/resources/request-for-information-rfi-assistance-get-it-right-the-first-time" className="hover:text-accent-green transition-colors">RFI Support</Link></li>
+                                <li><Link href="/resources/section-48-visa-restriction-in-australia-what-it-means-after-a-visa-refusal" className="hover:text-accent-green transition-colors">Refusal & Cancellation</Link></li>
+                                <li><Link href="/resources/ministerial-intervention-in-australia" className="hover:text-accent-green transition-colors">Ministerial Intervention</Link></li>
                             </ul>
                         </div>
                     </div>
