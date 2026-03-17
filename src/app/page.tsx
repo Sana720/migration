@@ -131,7 +131,7 @@ function HomeContent() {
       <section id="services" className="py-32 bg-bg-cream/50 relative overflow-hidden">
         <div className="container mx-auto px-4 md:px-8 relative z-10">
           <div className="flex flex-col lg:flex-row items-center justify-between mb-24 gap-16">
-            <div className="lg:w-1/2 text-center lg:text-left">
+            <div className="w-full lg:w-1/2 text-center lg:text-left">
               {/* <div className="text-accent-green font-black text-xs uppercase tracking-[0.4em] mb-4">Visa Categories</div> */}
               <h2 className="text-3xl md:text-5xl text-primary-navy font-black leading-tight mb-8">
                 Migration Services
@@ -140,7 +140,7 @@ function HomeContent() {
                 We are an innovative Australian immigration company that delivers a suite of immigration services and will support you through every step of the process.
               </p>
             </div>
-            <div className="lg:w-1/2 relative">
+            <div className="w-full lg:w-1/2 relative">
               <div className="relative aspect-[16/10] rounded-[3rem] overflow-hidden shadow-2xl border-8 border-white group">
                 <Image
                   src="/authorised-bg.png"

@@ -1,9 +1,7 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
-html {
-  scroll-behavior: smooth;
-}
+
 
 :root {
   --primary-navy: #00205B;

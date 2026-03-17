@@ -144,11 +144,11 @@ function ResourcesListingContent() {
 
                     {/* Pagination */}
                     {totalPages > 1 && (
-                        <div className="flex items-center justify-center gap-3 mt-16">
+                        <div className="flex items-center justify-start md:justify-center gap-2 md:gap-3 mt-16 overflow-x-auto flex-nowrap max-w-full pb-2 px-4 no-scrollbar">
                             <button
                                 onClick={() => { handlePageChange(Math.max(1, page - 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
                                 disabled={page === 1}
-                                className="w-12 h-12 flex items-center justify-center rounded-2xl border-2 border-gray-200 text-gray-400 hover:border-primary-navy hover:text-primary-navy disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                                className="w-10 h-10 md:w-12 md:h-12 shrink-0 flex items-center justify-center rounded-xl md:rounded-2xl border-2 border-gray-200 text-gray-400 hover:border-primary-navy hover:text-primary-navy disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                             >
                                 <ChevronLeft className="w-5 h-5" />
                             </button>
@@ -157,7 +157,7 @@ function ResourcesListingContent() {
                                 <button
                                     key={i}
                                     onClick={() => { handlePageChange(i + 1); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                                    className={`w-12 h-12 rounded-2xl font-black text-sm transition-all ${page === i + 1
+                                    className={`w-10 h-10 md:w-12 md:h-12 shrink-0 rounded-xl md:rounded-2xl font-black text-sm transition-all ${page === i + 1
                                         ? 'bg-primary-navy text-white shadow-lg'
                                         : 'border-2 border-gray-200 text-gray-500 hover:border-primary-navy hover:text-primary-navy'
                                         }`}
@@ -169,7 +169,7 @@ function ResourcesListingContent() {
                             <button
                                 onClick={() => { handlePageChange(Math.min(totalPages, page + 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
                                 disabled={page === totalPages}
-                                className="w-12 h-12 flex items-center justify-center rounded-2xl border-2 border-gray-200 text-gray-400 hover:border-primary-navy hover:text-primary-navy disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                                className="w-10 h-10 md:w-12 md:h-12 shrink-0 flex items-center justify-center rounded-xl md:rounded-2xl border-2 border-gray-200 text-gray-400 hover:border-primary-navy hover:text-primary-navy disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                             >
                                 <ChevronRight className="w-5 h-5" />
                             </button>
