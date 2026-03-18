@@ -10,7 +10,8 @@ import {
     Calendar,
     LogOut,
     ChevronRight,
-    BookOpen
+    BookOpen,
+    Settings
 } from 'lucide-react';
 import { createClient } from '@/utils/supabase/client';
 import { useRouter } from 'next/navigation';
@@ -20,6 +21,7 @@ const sidebarItems = [
     { name: 'Resources', href: '/admin/resources', icon: BookOpen },
     { name: 'Leads', href: '/admin/leads', icon: Users },
     { name: 'Availability', href: '/admin/availability', icon: Calendar },
+    { name: 'Settings', href: '/admin/settings', icon: Settings },
 ];
 
 export default function AdminLayout({
